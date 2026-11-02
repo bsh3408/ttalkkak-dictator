@@ -1,0 +1,7 @@
+sian-news.html
+_sian/
+server*.sql
+Thumbs.db
+desktop.ini
+.DS_Store
+.env
