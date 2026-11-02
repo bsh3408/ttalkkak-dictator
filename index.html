@@ -198,6 +198,11 @@ details.stat[open] summary{margin-bottom:6px}
 .letter .qopt{background:#fff;color:#2a2116;border-color:#b9a77a}
 @keyframes unfold{from{transform:scaleY(.2);opacity:0}to{transform:none;opacity:1}}
 .bfly{font-size:15px;line-height:1.8;padding:6px 0;border-bottom:1px dashed var(--line)}.bfly span{white-space:nowrap}.bfly i{font-style:normal;margin:0 6px;color:var(--gold,#c90)}
+.flag{display:inline-block;vertical-align:middle;border:1px solid #1a1a1a;background:#fff}
+.flagpick{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.flagpick .flag{border-width:2px}
+.roomcode{font-size:56px!important;letter-spacing:.2em}
+.top .reign{font:700 17px "Noto Sans KR",sans-serif;color:#1a1a1a;border-left:2px solid #1a1a1a;padding-left:12px;white-space:nowrap}.top .reign b{font-family:"Black Han Sans";font-weight:400;color:#b0201f;font-size:20px}
+@media (max-width:560px){.top .reign{font-size:13px;padding-left:8px}.top .reign b{font-size:15px}}
 .dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
 .dex div{border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px}
 .dex div b{display:block;font-size:14px}
@@ -487,7 +492,7 @@ details[open]>summary em{display:none}
 }
 </style>
 
-<div class="top"><b>딸깍 독재자</b><span class="file">통치일지.xlsx</span><span class="note" id="topnote">시연용 프로토타입</span><span id="sndbtns" class="sndbtns"></span></div>
+<div class="top"><b>딸깍 독재자</b><span class="reign" id="reign" hidden></span><span class="file">통치일지.xlsx</span><span class="note" id="topnote">시연용 프로토타입</span><span id="sndbtns" class="sndbtns"></span></div>
 <div class="wrap" id="app"></div>
 
 <script src="supabase-config.js"></script>
@@ -495,7 +500,7 @@ details[open]>summary em{display:none}
 // ───────── 설정: 한 판 50년, 수업 전체 30분 (시간 안에 몇 판이든 다시 할 수 있다) ─────────
 let TURNS = 50, TIME_LIMIT = 30 * 60, EVENT_TURNS = [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47], PLAN = 5;
 function setLength(n){
-  TURNS = n === 12 ? 12 : 50; TIME_LIMIT = TURNS === 12 ? 12 * 60 : 30 * 60;
+  TURNS = 50; TIME_LIMIT = 30 * 60;   // 한 판은 늘 50년
   EVENT_TURNS = TURNS === 50 ? [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47] : [3, 5, 7, 9, 11];
   PLAN = TURNS === 50 ? 5 : 4;
 }
@@ -2221,13 +2226,14 @@ function titleSelect(hideNew){
   return `<label class="f">칭호<select id="ptitle"><option value="">칭호 없음</option>${got.map(id => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(titleOf(id))}</option>`).join('')}</select></label>`;
 }
 function readTitle(){ const el = document.getElementById('ptitle'); if (el) try{ localStorage.setItem('ttalkkak_title', el.value); }catch(e){} }
-const UNLOCK_SEC = 30 * 60;
+const UNLOCK_SEC = 20 * 60;   // 초보 독재자를 20분 하면 진짜 독재자가 열린다
 const TEACHER_MODE = /teacher/.test(location.hash);   // 교사 시연용: 주소 끝에 #teacher
 let PLAYING = false;
 const beginnerKey = n => 'ttalkkak_beginner_' + (n || '').trim();
 function beginnerSec(n){ try{ return +localStorage.getItem(beginnerKey(n)) || 0; }catch(e){ return 0; } }
 function setBeginner(n, v){ try{ localStorage.setItem(beginnerKey(n), String(Math.round(v))); }catch(e){} if (ACCOUNT && ACCOUNT.name === n) syncProfile(); }
-const realUnlocked = n => TEACHER_MODE || beginnerSec(n) >= UNLOCK_SEC;
+const isMaster = () => !!(ACCOUNT && ACCOUNT.master);
+const realUnlocked = n => TEACHER_MODE || (isMaster() && ACCOUNT.name === n) || beginnerSec(n) >= UNLOCK_SEC;
 // 초보 독재자를 실제로 하고 있는 동안만 5초씩 쌓는다 (다른 탭을 보고 있으면 세지 않는다)
 setInterval(() => { if (PLAYING && S && S.mode === 1 && document.visibilityState === 'visible') setBeginner(S.baseName, beginnerSec(S.baseName) + 5); }, 5000);
 function lockInfo(n){
@@ -2235,9 +2241,9 @@ function lockInfo(n){
   return realUnlocked(n) ? '' : `🔒 초보 독재자 ${left}분 더 하면 열림`;
 }
 function refreshLock(){
-  const el = document.getElementById('pname'), btn = document.getElementById('realbtn'), ln = document.getElementById('lockline');
-  if (!el || !btn) return;
-  const t = lockInfo(el.value);
+  const btn = document.getElementById('realbtn'), ln = document.getElementById('lockline');
+  if (!PICK || !btn) return;
+  const t = lockInfo(PICK.name);
   btn.classList.toggle('locked', !!t); ln.textContent = t;
 }
 function savedName(){ try{ return localStorage.getItem('ttalkkak_name')||''; }catch(e){ return ''; } }
@@ -2324,7 +2330,7 @@ function newGame(mode, name, motto){
   if (!SESSION) SESSION = {start:null, runs:[], best:0, falls:0, right:0, mode, name, net:null, card:false};
   if (!SESSION.start) SESSION.start = Date.now();
   PLAYING = true;
-  S = { mode, name:withTitle(name||'이름 없는'), motto, turn:0, gdp:GDP0, gdp0:GDP0, rank0:START_RANK, st:{...ST0},
+  S = { mode, flag:MYFLAG, name:withTitle(name||'이름 없는'), motto, turn:0, gdp:GDP0, gdp0:GDP0, rank0:START_RANK, st:{...ST0},
         cap:{coal:35,lng:30,hydro:22,nuke:0,wind:0,solar:0,other:0}, demand:72, ess:0, grid:0, blackouts:0,
         decks:{1:shuffle(BASE.filter(c=>eraCard(c)===1)), 2:shuffle(BASE.filter(c=>eraCard(c)===2)), 3:shuffle(BASE.filter(c=>eraCard(c)===3))}, era:1, purges:0, falls:{}, aiStreak:0, boMark:0, gen:1, baseName:name||'이름 없는', medals:0, lastPlan:null, coupPending:null, nation:NATION, rankMove:null, gdpHist:[GDP0], slump:0, slumpNow:false, aiAsked:0, aiRefused:0, advice:(TURNS === 50 ? 7 : 3), adviceUsed:0, adviceText:null, noAi:0, maxNoAi:0, everSlump:false, plansOk:0, pending:[], flags:{}, plants:{}, events:shuffle(EVENTS.slice()),
         built:['hut','hut','hut','hut','town'].concat(Array(18).fill('tree')),
@@ -2337,7 +2343,7 @@ function pickWeather(){ const tot=WEATHER.reduce((a,w)=>a+w.w,0); let r=Math.ran
 function makeBots(){ // 시연용 가상 학급
   const names=['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','류','전','홍','고','문'];
   const nat = shuffle(MATE_NATIONS.filter(x => x !== NATION));
-  return names.map((n,i)=>({name:n+'○○', nation:nat[i], gdp:gdpForRank(60+Math.floor(Math.random()*21)), rate:0.005+Math.random()*0.055}));
+  return names.map((n,i)=>({name:n+'○○', nation:nat[i], flag:String(1 + Math.floor(Math.random() * 1e9)), gdp:gdpForRank(60+Math.floor(Math.random()*21)), rate:0.005+Math.random()*0.055}));
 }
 const isOpen = () => S.mode === 2;
 const left = () => Math.max(0, TIME_LIMIT - Math.floor((Date.now()-S.start)/1000));
@@ -2465,18 +2471,56 @@ function awardBadges(){
 }
 const badgeHTML = (b, on, isNew) => `<div class="badge2 ${on ? '' : 'off'}"><i></i><div><b>${b.n}${isNew ? ' <span class="newb">새로 받음</span>' : ''}</b><small>${b.d}</small></div></div>`;
 
+
+// ───────── 픽셀 국기: 여러 나라 국기의 짜임새(삼색기·십자·원·별·삼각형·사선)를 본떠 씨앗 값으로 무작위 생성 ─────────
+const FLAG_COLORS = ['#c8102e', '#ffffff', '#0033a0', '#012169', '#009b3a', '#fcd116', '#111111', '#ff8200', '#75aadb', '#8d1b3d', '#007a5e', '#f4f1e6'];
+function flagRng(seed){ let a = (+seed || 1) >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function flagGrid(seed){
+  const r = flagRng(seed), W = 15, H = 10, pick = n => Math.floor(r() * n);
+  const cols = []; while (cols.length < 4){ const c = FLAG_COLORS[pick(FLAG_COLORS.length)]; if (!cols.includes(c)) cols.push(c); }
+  const [a, b, c, d] = cols, g = Array.from({length:H}, () => Array(W).fill(a));
+  const fill = f => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){ const v = f(x, y); if (v) g[y][x] = v; } };
+  const star = (cx, cy, col) => [[0,-2],[0,-1],[-2,0],[-1,0],[0,0],[1,0],[2,0],[-1,1],[1,1],[-1,2],[1,2]].forEach(([dx, dy]) => { const x = cx + dx, y = cy + dy; if (y >= 0 && y < H && x >= 0 && x < W) g[y][x] = col; });
+  const disc = (cx, cy, rad, col) => fill((x, y) => (x + .5 - cx) ** 2 + (y + .5 - cy) ** 2 <= rad * rad ? col : 0);
+  const emblem = (cx, cy, col) => r() < .5 ? star(cx, cy, col) : disc(cx + .5, cy + .5, 1.8, col);
+  switch (pick(12)){
+    case 0: fill((x, y) => y < 3 ? a : y < 7 ? b : c); if (r() < .4) emblem(7, 5, d); break;                         // 가로 삼색기
+    case 1: fill(x => x < 5 ? a : x < 10 ? b : c); if (r() < .4) emblem(7, 5, d); break;                              // 세로 삼색기
+    case 2: fill((x, y) => y < 5 ? a : b); if (r() < .5) emblem(3, 2, c); break;                                     // 가로 이색기
+    case 3: { const wide = r() < .5; fill((x, y) => (wide && (x >= 3 && x <= 6 || y >= 3 && y <= 6)) ? b : 0);       // 북유럽 십자
+      fill((x, y) => (x === 4 || x === 5 || y === 4 || y === 5) ? (wide ? c : b) : 0); break; }
+    case 4: disc(7.5, 5, 3.2, b); break;                                                                             // 가운데 원
+    case 5: fill((x, y) => y < 5 ? a : b); fill((x, y) => x < 1.4 * Math.min(y + .5, H - y - .5) ? c : 0); if (r() < .6) star(2, 5, d); break;   // 깃대 쪽 삼각형
+    case 6: fill((x, y) => y % 2 ? b : a); fill((x, y) => x < 6 && y < 5 ? c : 0); star(3, 2, d); break;             // 모서리 칸 + 줄무늬
+    case 7: fill((x, y) => { const v = (x + .5) / W - (y + .5) / H; return v > .14 ? a : v < -.14 ? c : b; }); break;   // 사선 띠
+    case 8: fill((x, y) => (x >= 6 && x <= 8 && y >= 2 && y <= 7) || (y >= 4 && y <= 5 && x >= 4 && x <= 10) ? b : 0); break;   // 가운데 십자
+    case 9: star(7, 5, b); if (r() < .5) fill((x, y) => y === 0 || y === H - 1 ? c : 0); break;                     // 큰 별
+    case 10: fill((x, y) => Math.abs((x + .5) / W - (y + .5) / H) < .09 || Math.abs((x + .5) / W - 1 + (y + .5) / H) < .09 ? b : 0); break;   // 대각 십자
+    default: fill(x => x < 5 ? a : b); emblem(9, 5, c); break;                                                     // 세로 이색기 + 문장
+  }
+  return g;
+}
+function flagSVG(seed, w){
+  const g = flagGrid(seed), H = g.length, W = g[0].length;
+  let rects = '';
+  g.forEach((row, y) => { let x0 = 0; for (let x = 1; x <= W; x++) if (x === W || row[x] !== row[x0]){ rects += `<rect x="${x0}" y="${y}" width="${x - x0}" height="1" fill="${row[x0]}"/>`; x0 = x; } });
+  return `<svg class="flag" viewBox="0 0 ${W} ${H}" width="${w}" height="${Math.round(w * H / W)}" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
+}
+
 // ───────── 계정과 순위 방 ─────────
 // 지도자 이름이 아이디, 나라 이름이 비밀번호다. 방 코드가 없으면 모두가 모이는 전체 순위 방(ALL)에 들어간다.
 const NET_OK = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
 let ROOM = null;      // {code, turns, global}
-let ACCOUNT = null;   // {name, nation}: 로그인에 성공했을 때만
-const mateLabel = b => b.nation ? `${b.nation} (${b.name})` : b.name;
-async function login(name, nation){
+let ACCOUNT = null;   // {name, pass, nation, flag}: 로그인에 성공했을 때만
+let PICK = null;      // 지금 나라를 세우는 지도자 {name}
+let MYFLAG = '';      // 내 픽셀 국기의 씨앗 값
+const mateLabel = b => b.nation ? `${b.nation}(${b.name})` : b.name;
+async function login(name, pass){
   if (!NET_OK) return {ok:true, offline:true};
   try {
-    const r = await supaRpc('tk_login', {p_name:name, p_nation:nation});
-    if (!r || !r.ok) return {ok:false, msg:(r && r.msg) || '로그인하지 못했습니다'};
-    ACCOUNT = {name, nation};
+    const r = await supaRpc('tk_login', {p_name:name, p_pass:pass});
+    if (!r || !r.ok) return {ok:false, msg:(r && r.msg) || '들어가지 못했습니다'};
+    ACCOUNT = {name, pass, nation:r.nation || '', flag:r.flag || '', master:!!r.master};
     setBeginner(name, Math.max(beginnerSec(name), r.beginner_sec || 0));
     try {
       const t = loadTitles(); (r.titles || []).forEach(id => { if (!t.includes(id)) t.push(id); }); localStorage.setItem('ttalkkak_titles', JSON.stringify(t));
@@ -2489,14 +2533,14 @@ let saveTimer = null;
 function syncProfile(){
   if (!ACCOUNT) return;
   if (saveTimer) return;   // 10초에 한 번만 모아서 저장한다
-  saveTimer = setTimeout(() => { saveTimer = null; supaRpc('tk_save', {p_name:ACCOUNT.name, p_nation:ACCOUNT.nation,
-    p:{beginner_sec:beginnerSec(ACCOUNT.name), titles:loadTitles(), dex:loadDex()}}).catch(e => console.warn(e)); }, 10000);
+  saveTimer = setTimeout(() => { saveTimer = null; supaRpc('tk_save', {p_name:ACCOUNT.name, p_pass:ACCOUNT.pass,
+    p:{beginner_sec:beginnerSec(ACCOUNT.name), titles:loadTitles(), dex:loadDex(), nation:ACCOUNT.nation, flag:ACCOUNT.flag}}).catch(e => console.warn(e)); }, 10000);
 }
 const mates = () => S.net ? (S.mates || []) : S.bots;
 async function netStart(){
-  S.net = {code:ROOM.code, global:!!ROOM.global}; S.mates = []; S.bots = []; SESSION.net = S.net;
+  S.net = {code:ROOM.code, open:!!ROOM.open}; S.mates = []; S.bots = []; SESSION.net = S.net;
   try {
-    const r = await supaRpc('tk_join', {p_code:ROOM.code, p_name:S.baseName, p_nation:ACCOUNT ? ACCOUNT.nation : S.nation, p_mode:S.mode, p_start_rank:START_RANK, p_gdp:Math.round(S.gdp)});
+    const r = await supaRpc('tk_join2', {p_code:ROOM.code, p_name:S.baseName, p_pass:ACCOUNT ? ACCOUNT.pass : '', p_nation:S.nation, p_flag:MYFLAG, p_mode:S.mode, p_start_rank:START_RANK, p_gdp:Math.round(S.gdp)});
     if (!r.ok) { console.warn(r.msg); S.net = null; SESSION.net = null; S.bots = makeBots(); return; }   // 들어가지 못하면 혼자 하기로
     S.net.id = r.id; S.net.secret = r.secret;
   } catch(e){ console.warn(e); }
@@ -2506,8 +2550,8 @@ async function netStart(){
 async function netPoll(){
   if (!S || !S.net) return;
   try {
-    const rows = await supaRpc('tk_board', {p_code:S.net.code, p_mode:S.mode});
-    S.mates = SESSION.mates = rows.filter(r => r.name !== S.baseName).map(r => ({name:r.name, nation:r.nation, gdp:+r.gdp, done:r.done}));
+    const rows = await supaRpc('tk_board2', {p_code:S.net.code, p_mode:S.mode});
+    S.mates = SESSION.mates = (rows || []).filter(r => r.name !== S.baseName).map(r => ({name:r.name, nation:r.nation, flag:r.flag, gdp:+r.gdp, done:r.done}));
   } catch(e){ console.warn(e); }
 }
 function netPush(extra){
@@ -2938,10 +2982,12 @@ function bannerHTML(){
 function layout(midHTML){
   const sup=supplyTotal(), dem=demandNow();
   const mhud = `<div class="mhud"><span>GDP <b>${fmt(Math.round(S.gdp))}조</b> · 자산 <b>${fmt(Math.round(S.assets))}조</b> · 세계 <b>${worldRank(S.gdp)}위</b></span><span>우리 반 <b>${myRank()}등</b></span><span>전력 <b class="${sup<dem?'neg':''}">${sup}/${dem}GW</b></span><span>${S.turn}/${TURNS}년 · <b class="clock">${clock()}</b></span></div>`;
+  const rg = document.getElementById('reign');
+  if (rg){ rg.hidden = false; rg.innerHTML = `${yearOf(S.turn)}년 · 통치 <b>${S.turn}년째</b> · 남은 <b>${Math.max(0, TURNS - S.turn)}년</b>`; }
   app.innerHTML = `<div class="game"><div class="col">${statusPanel()}</div><div class="mid">${mhud}${midHTML}<div class="land">${bannerHTML()}${landSVG()}</div></div><div class="logrow">${logPanel()}</div></div>`;
 }
 let timers=[];
-function clearTimers(){timers.forEach(t=>{clearInterval(t);clearTimeout(t)});timers=[]}
+function clearTimers(){timers.forEach(t=>{clearInterval(t);clearTimeout(t)});timers=[]; const rg = document.getElementById('reign'); if (rg) rg.hidden = true;}   // 통치 연도 표시는 결재 화면에서만
 function tickClock(){ timers.push(setInterval(()=>{ document.querySelectorAll('.clock').forEach(el=>el.textContent=clock()); },1000)); }
 function runLock(btns, sec, done){
   btns.forEach(b=>{ const l=b.querySelector('.lock'); l.style.transition=`width ${sec}s linear`; requestAnimationFrame(()=>requestAnimationFrame(()=>l.style.width='100%')); });
@@ -2969,57 +3015,135 @@ function renderStart(){
       <p>2040년, 작은 개발도상국의 모든 권력이 당신 손에 있습니다.</p>
       <p>해마다 올라오는 서류에 승인·반려 도장을 찍거나, AI에게 물어보세요.</p>
       <p>목표는 50년 통치. 쫓겨나면 새 나라로 다시 도전합니다.</p></div></details>
-    <div class="names"><label class="f">지도자 이름<input type="text" id="pname" maxlength="10" placeholder="예: 김하늘" value="${esc(savedName())}"></label>
-    <label class="f">나라 이름 <small>비밀번호처럼 기억하기</small><input type="text" id="nname" maxlength="8" placeholder="예: 누리국" value="${esc(savedNation())}"></label></div>
+    <div class="mode">
+      <button onclick="goAll()"><b>모두와 하기</b><span>이 게임을 한 모든 지도자와 순위를 겨룹니다</span></button>
+      <button onclick="renderRoomMenu()"><b>방 만들어서 하기</b><span>같은 방 친구들끼리 순위를 나눕니다</span></button>
+    </div>
+    <details class="fold"><summary>결말 도감 <em>${loadDex().length}/${ENDINGS.length}</em></summary><div class="in">${dexHTML()}</div></details>
+  </div>`;
+}
+function goAll(){ ROOM = NET_OK ? {code:'ALL', turns:50, open:true} : null; setLength(50); renderLogin(); }
+function renderRoomMenu(){
+  clearTimers();
+  app.innerHTML = `<div class="screen start">
+    <span class="badge" style="justify-self:start">방 만들어서 하기</span>
+    <h1>방을 만들까요, 들어갈까요?</h1>
+    <div class="mode">
+      <button onclick="makeRoom()"><b>방 만들기</b><span>방 코드를 받아 친구들에게 알려 줍니다</span></button>
+      <button onclick="renderJoin()"><b>참여하기</b><span>친구에게 받은 방 코드를 넣습니다</span></button>
+    </div>
+    <div id="roommsg"></div>
+    <button class="ghost" onclick="renderStart()">처음으로</button></div>`;
+}
+async function makeRoom(){
+  const msg = document.getElementById('roommsg');
+  if (!NET_OK){ msg.innerHTML = '<div class="power bad">서버에 연결할 수 없어 방을 만들 수 없습니다.</div>'; return; }
+  msg.innerHTML = '<div class="power">방을 만드는 중…</div>';
+  let r = null;
+  try { r = await supaRpc('tk_make_room', {}); } catch(e){ console.warn(e); }
+  if (!r || !r.ok){ msg.innerHTML = '<div class="power bad">방을 만들지 못했습니다. 잠시 뒤 다시 해 주세요.</div>'; return; }
+  const end = new Date(r.expires), until = `${end.getMonth() + 1}월 ${end.getDate()}일`;
+  app.innerHTML = `<div class="screen start">
+    <span class="badge" style="justify-self:start">방 만들기</span>
+    <h1>방이 열렸습니다</h1>
+    <div class="ending"><small>방 코드</small><b class="roomcode">${r.code}</b><small>친구들에게 이 코드를 알려 주세요 · ${until}에 자동으로 사라집니다</small></div>
+    <button class="primary" id="goroom">이 방으로 들어가기</button>
+    <button class="ghost" onclick="renderStart()">처음으로</button></div>`;
+  document.getElementById('goroom').onclick = () => { ROOM = {code:r.code, turns:50, open:true}; setLength(50); renderLogin(); };
+}
+function renderJoin(){
+  app.innerHTML = `<div class="screen start">
+    <span class="badge" style="justify-self:start">참여하기</span>
+    <h1>방 코드를 넣어 주세요</h1>
+    <label class="f">방 코드<input type="text" id="rcode" inputmode="numeric" maxlength="4" placeholder="예: 1234"></label>
+    <div id="joinmsg"></div>
+    <button class="primary" id="gojoin">들어가기</button>
+    <button class="ghost" onclick="renderRoomMenu()">뒤로</button></div>`;
+  const el = document.getElementById('rcode'); el.focus();
+  const go = async () => {
+    const rc = el.value.trim(), msg = document.getElementById('joinmsg');
+    if (!/^\d{4}$/.test(rc)){ msg.innerHTML = '<div class="power bad">숫자 네 자리를 넣어 주세요.</div>'; return; }
+    let r = null;
+    try { r = await supaRpc('tk_room', {p_code:rc}); } catch(e){ msg.innerHTML = '<div class="power bad">서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.</div>'; return; }
+    if (!r || !r.ok){ msg.innerHTML = '<div class="power bad">방을 찾을 수 없습니다. 만든 지 일주일이 지난 방은 사라집니다.</div>'; return; }
+    ROOM = {code:rc, turns:r.turns, open:!!r.open}; setLength(r.turns);
+    renderLogin();
+  };
+  document.getElementById('gojoin').onclick = go;
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+}
+function roomBadge(){ return !ROOM ? '혼자 하기' : ROOM.code === 'ALL' ? '모두와 하기' : `방 ${ROOM.code}`; }
+function renderLogin(){
+  app.innerHTML = `<div class="screen start">
+    <span class="badge" style="justify-self:start">${roomBadge()}</span>
+    <h1>지도자 등록</h1>
+    <p class="lead">처음이면 지금 정한 이름과 비밀번호로 등록됩니다. 다음에도 똑같이 넣으면 기록이 이어집니다.</p>
+    <label class="f">이름<input type="text" id="pname" maxlength="10" placeholder="예: 김하늘" value="${esc(savedName())}" autocomplete="username"></label>
+    <label class="f">비밀번호<input type="password" id="ppass" maxlength="20" placeholder="잊지 않을 비밀번호" autocomplete="current-password"></label>
     <div id="loginmsg"></div>
+    <button class="primary" id="gologin">들어가기</button>
+    <button class="ghost" onclick="renderStart()">처음으로</button></div>`;
+  const pn = document.getElementById('pname'), pp = document.getElementById('ppass');
+  (pn.value ? pp : pn).focus();
+  const go = async () => {
+    const name = pn.value.trim(), pass = pp.value, msg = document.getElementById('loginmsg');
+    if (!name){ pn.focus(); pn.style.borderColor = 'var(--x)'; pn.placeholder = '이름을 먼저 적어 주세요'; return; }
+    if (NET_OK && !pass){ pp.focus(); pp.style.borderColor = 'var(--x)'; pp.placeholder = '비밀번호를 적어 주세요'; return; }
+    msg.innerHTML = NET_OK ? '<div class="power">지도자 확인 중…</div>' : '';
+    ACCOUNT = null;
+    const L = await login(name, pass);
+    if (!L.ok){ msg.innerHTML = `<div class="power bad">${esc(L.msg)}</div>`; pp.value = ''; pp.style.borderColor = 'var(--x)'; pp.focus(); return; }
+    if (L.offline) ROOM = null;
+    try{ localStorage.setItem('ttalkkak_name', name); }catch(e){}
+    PICK = {name, isNew:!!L.isNew, offline:!!L.offline};
+    renderNation();
+  };
+  document.getElementById('gologin').onclick = go;
+  [pn, pp].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
+}
+const newFlag = () => String(1 + Math.floor(Math.random() * 1e9));
+function renderNation(){
+  if (!PICK) return renderStart();
+  const nat0 = (ACCOUNT && ACCOUNT.nation) || savedNation();
+  MYFLAG = (ACCOUNT && ACCOUNT.flag) || MYFLAG || newFlag();
+  app.innerHTML = `<div class="screen start">
+    <span class="badge" style="justify-self:start">${roomBadge()}</span>
+    <h1>${PICK.isNew ? '새 나라를 세웁니다' : `${esc(PICK.name)} 지도자 동지, 어서 오십시오`}</h1>
+    ${isMaster() ? '<div class="power up"><b>마스터 계정</b> · 진짜 독재자가 바로 열리고, 시간 제한 없이 50년을 끝까지 할 수 있습니다.</div>' : ''}
+    ${PICK.offline ? '<div class="power">서버에 연결하지 못해 혼자 하기로 진행합니다. 순위는 가상 학급과 겨룹니다.</div>' : ''}
+    <div class="flagpick"><span id="flagbox">${flagSVG(MYFLAG, 120)}</span><button class="ghost" id="reflag">국기 다시 뽑기</button></div>
+    <label class="f">나라 이름<input type="text" id="nname" maxlength="8" placeholder="예: 누리국" value="${esc(nat0)}"></label>
     ${loadTitles().length ? titleSelect() : ''}
-    ${NET_OK ? `<label class="f">방 코드<input type="text" id="rcode" inputmode="numeric" maxlength="4" placeholder="비워 두면 전체 순위 · 코드를 넣으면 같은 코드 친구들과"></label>` : ''}
     <div class="mode">
       <button onclick="startMode(1)"><b>초보 독재자</b><span>GDP와 수출·수입·자산만 보입니다</span></button>
       <button onclick="startMode(2)" id="realbtn"><b>진짜 독재자</b><span>모든 지표가 보입니다</span><span class="lockline" id="lockline"></span></button>
     </div>
-    <details class="fold"><summary>결말 도감 <em>${loadDex().length}/${ENDINGS.length}</em></summary><div class="in">${dexHTML()}</div></details>
-  </div>`;
-  document.getElementById('pname').addEventListener('input', refreshLock);
+    <button class="ghost" onclick="renderStart()">처음으로</button></div>`;
+  document.getElementById('reflag').onclick = () => { MYFLAG = newFlag(); document.getElementById('flagbox').innerHTML = flagSVG(MYFLAG, 120); SND.unlockAudio(); SND.sfx('tick'); };
   refreshLock();
 }
 async function startMode(m){
-  const name = (document.getElementById('pname').value||'').trim();
-  if (!name){ const el=document.getElementById('pname'); el.focus(); el.style.borderColor='var(--x)'; el.placeholder='지도자 이름을 먼저 지어 주세요'; return; }
-  const nat = (document.getElementById('nname').value||'').trim();
-  if (!nat){ const el=document.getElementById('nname'); el.focus(); el.style.borderColor='var(--x)'; el.placeholder='나라 이름을 지어 주세요'; return; }
-  const msg = document.getElementById('loginmsg');
-  if (!ACCOUNT || ACCOUNT.name !== name || ACCOUNT.nation !== nat){
-    ACCOUNT = null;
-    if (msg) msg.innerHTML = NET_OK ? '<div class="power">지도자 확인 중…</div>' : '';
-    const L = await login(name, nat);
-    if (!L.ok){ if (msg) msg.innerHTML = `<div class="power bad">${esc(L.msg)}</div>`; const el = document.getElementById('nname'); el.style.borderColor = 'var(--x)'; el.focus(); return; }
-    if (msg) msg.innerHTML = L.offline ? '' : `<div class="power up">${L.isNew ? '새 지도자로 등록했습니다. 다음에도 같은 이름과 나라 이름으로 들어오세요.' : '지도자 동지, 다시 오신 것을 환영합니다.'}</div>`;
-    refreshLock();
-  }
+  if (!PICK) return renderStart();
+  const name = PICK.name;
+  const nel = document.getElementById('nname'), nat = (nel.value || '').trim();
+  if (!nat){ nel.focus(); nel.style.borderColor = 'var(--x)'; nel.placeholder = '나라 이름을 지어 주세요'; return; }
   if (m === 2 && !realUnlocked(name)){
-    // 같은 방에서 초보 독재자를 끝까지 한 기록이 있으면 열어 준다
-    const rc0 = NET_OK && document.getElementById('rcode') ? document.getElementById('rcode').value.trim() : '';
+    // 선생님 방에서 초보 독재자를 끝까지 한 기록이 있으면 열어 준다
     const no = () => { const ln = document.getElementById('lockline'); ln.textContent = lockInfo(name); SND.unlockAudio(); SND.sfx('x'); };
-    if (!rc0) return no();
-    supaRpc('tk_board', {p_code:rc0, p_mode:1}).then(rows => {
+    if (!ROOM || ROOM.open) return no();
+    supaRpc('tk_board2', {p_code:ROOM.code, p_mode:1}).then(rows => {
       if ((rows || []).some(r => r.name === name && r.done)){ setBeginner(name, UNLOCK_SEC); startMode(2); } else no();
     }).catch(no);
     return;
   }
-  NATION = (document.getElementById('nname').value||'').trim() || '누리국';
+  NATION = nat;
+  if (ACCOUNT){ ACCOUNT.nation = nat; ACCOUNT.flag = MYFLAG; syncProfile(); }
   readTitle();
+  TIME_LIMIT = isMaster() ? 24 * 3600 : m === 1 ? 20 * 60 : 30 * 60;   // 초보 독재자 연습은 20분, 진짜 독재자는 30분, 마스터는 시간 제한 없음
   SESSION = {start:null, runs:[], best:0, falls:0, right:0, mode:m, name, net:null, card:false};
   try{ localStorage.setItem('ttalkkak_nation', NATION); }catch(e){}
-  setLength(+(document.querySelector('input[name=len]:checked')||{value:50}).value);
   if (document.getElementById('fast') && document.getElementById('fast').checked){ LOCK_SEC=0.5; RESULT_SEC=0.8; } else { LOCK_SEC=1.5; RESULT_SEC=2.5; }
-  const rc = NET_OK ? (document.getElementById('rcode').value || '').trim() : '';
-  if (!rc){ ROOM = ACCOUNT ? {code:'ALL', turns:50, global:true} : null; renderQuiz(m, name); return; }
-  supaRpc('tk_room', {p_code:rc}).then(r => {
-    if (!r || !r.ok){ const el = document.getElementById('rcode'); el.value = ''; el.placeholder = '방 코드를 찾을 수 없습니다'; el.style.borderColor = 'var(--x)'; el.focus(); return; }
-    ROOM = {code:rc, turns:r.turns}; setLength(r.turns);   // 서버에는 12 아니면 30으로 저장되므로 12가 아니면 50년
-    renderQuiz(m, name);
-  }).catch(() => alert('서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.'));
+  renderQuiz(m, name);
 }
 const LETTER_FROM = ['과학원', '산업 인민위원회', '환경 보호 위원회', '협동농장', '인민 대표'];
 function renderQuiz(m, name){
@@ -3288,10 +3412,10 @@ function renderResult(side, opt, pw){
 
 // ───────── 끝 화면 ─────────
 function rankList(){
-  const all=[...mates().map(b=>({name:mateLabel(b),gdp:b.gdp})), {name:S.name+' (나)',gdp:S.gdp,me:true}].sort((a,b)=>b.gdp-a.gdp);
+  const all=[...mates().map(b=>({name:mateLabel(b),flag:b.flag,gdp:b.gdp})), {name:`${S.nation}(${S.name}) · 나`,flag:MYFLAG,gdp:S.gdp,me:true}].sort((a,b)=>b.gdp-a.gdp);
   const rank=all.findIndex(x=>x.me)+1;
   const show = all.slice(0,5).concat(rank>5?[all[rank-1]]:[]);
-  return {rank, total:all.length, html:`<div class="rank">${show.map(r=>`<div class="${r.me?'me':''}"><span>${all.indexOf(r)+1}</span><span>${esc(r.name)}</span><span>${fmt(r.gdp)}조</span></div>`).join('')}</div>`};
+  return {rank, total:all.length, html:`<div class="rank">${show.map(r=>`<div class="${r.me?'me':''}"><span>${all.indexOf(r)+1}</span><span>${r.flag ? flagSVG(r.flag, 24) + ' ' : ''}${esc(r.name)}</span><span>${fmt(r.gdp)}조</span></div>`).join('')}</div>`};
 }
 function endGame(){
   clearTimers(); PLAYING = false;
@@ -3302,7 +3426,7 @@ function endGame(){
   // 초보 독재자 공개 화면과 투표는 이번 수업에서 GDP가 가장 높았던 판으로 보여 준다
   if (S.mode === 1 && SESSION.runs.length){ const top = SESSION.runs.slice().sort((a, b) => b.gdp - a.gdp)[0].S; if (top !== S) S = top; }
   netPush({done:true, ending:endingOf(S).id, motto:S.motto || null});
-  if (S.net && !S.net.global && S.mode === 1) setTimeout(() => waitRoom('revealed', reveal), 300);
+  if (S.net && !S.net.open && S.mode === 1) setTimeout(() => waitRoom('revealed', reveal), 300);
   SND.music('end'); SND.sfx('end');
   const R = rankList();
   app.innerHTML = `<div class="screen">
@@ -3312,7 +3436,7 @@ function endGame(){
     ${S.justUnlocked ? '<div class="power up"><b>진짜 독재자가 열렸습니다!</b> 이제 국민 생활 지표가 모두 보이는 진짜 독재자를 할 수 있습니다.</div>' : ''}
     <div class="box"><h3>우리 반 GDP 순위</h3>${R.html}</div>
     ${S.mode===2 ? `<button class="ghost" onclick="renderLeaders()">진짜 지도자 랭킹 보기</button>` : ''}
-    ${S.mode===1 ? (S.net && !S.net.global ? `<div class="power" id="waitbox">선생님이 숨겨진 지표를 공개할 때까지 기다려 주세요…</div>` : `<button class="primary" onclick="reveal()">숨겨진 지표 공개 (교사 버튼)</button>`) : `<button class="primary" onclick="nationCard()">나라 카드 만들기</button>`}
+    ${S.mode===1 ? (S.net && !S.net.open ? `<div class="power" id="waitbox">선생님이 숨겨진 지표를 공개할 때까지 기다려 주세요…</div>` : `<button class="primary" onclick="reveal()">숨겨진 지표 공개 (교사 버튼)</button>`) : `<button class="primary" onclick="nationCard()">나라 카드 만들기</button>`}
     <details class="fold"><summary>자세한 통치 기록 <em>눌러서 펼치기</em></summary>
     <div class="box"><h3>마지막 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
     <div class="box"><div class="in"><div class="lead">최종 국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">시작 ${fmt(S.gdp0 || GDP0)}조 원 · 변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위) · 우리 반 ${R.rank}등 / ${R.total}명 · 정전 ${S.blackouts}번 · 숙청 ${S.purges}번</div></div></div>
@@ -3551,17 +3675,17 @@ function leaderMeta(s){ const G = gradeOf(s); return {score:G.total, grade:G.g, 
 const PART_NAMES = ['경제 성장', '국민 삶', '공정함', '환경과 기후', '스스로 판단', '통치 기간'];
 async function leaderRows(){
   if (S.net){
-    const rows = await supaRpc('tk_reveal', {p_code:S.net.code, p_mode:2});
-    const list = rows.filter(r => r.st && r.st.score != null).map(r => ({name:r.name, nation:r.nation, gdp:+r.gdp, score:r.st.score, grade:r.st.grade, years:r.st.years, parts:r.st.parts || [], ending:r.ending, me:r.name === S.baseName}));
-    if (S.net.global && !list.some(r => r.me)) list.push({name:S.baseName, nation:'', gdp:S.gdp, ...leaderMeta(S), ending:endingOf(S).id, me:true});
+    const rows = (await supaRpc('tk_reveal2', {p_code:S.net.code, p_mode:2})) || [];
+    const list = rows.filter(r => r.st && r.st.score != null).map(r => ({name:r.name, nation:r.nation, flag:r.flag, gdp:+r.gdp, score:r.st.score, grade:r.st.grade, years:r.st.years, parts:r.st.parts || [], ending:r.ending, me:r.name === S.baseName}));
+    if (S.net.open && !list.some(r => r.me)) list.push({name:S.baseName, nation:S.nation, flag:MYFLAG, gdp:S.gdp, ...leaderMeta(S), ending:endingOf(S).id, me:true});
     return list;
   }
   // 혼자 연습: 가상 학급 친구들의 지표를 만들어 비교한다
   const me = leaderMeta(S);
-  return [{name:S.baseName, nation:S.nation, gdp:S.gdp, ...me, ending:endingOf(S).id, me:true}].concat(S.bots.map(b => {
+  return [{name:S.baseName, nation:S.nation, flag:MYFLAG, gdp:S.gdp, ...me, ending:endingOf(S).id, me:true}].concat(S.bots.map(b => {
     const parts = [20 + Math.random() * 70, 25 + Math.random() * 50, 25 + Math.random() * 50, 20 + Math.random() * 60, Math.random() * 100, 30 + Math.random() * 70].map(Math.round);
     const score = Math.round(parts.reduce((a, v) => a + v, 0) / 6);
-    return {name:b.name, nation:b.nation, gdp:b.gdp, score, grade:score >= 80 ? 'S' : score >= 70 ? 'A' : score >= 60 ? 'B' : score >= 50 ? 'C' : score >= 40 ? 'D' : 'F', years:parts[5] >= 100 ? TURNS : Math.round(parts[5] / 100 * TURNS), parts, me:false};
+    return {name:b.name, nation:b.nation, flag:b.flag, gdp:b.gdp, score, grade:score >= 80 ? 'S' : score >= 70 ? 'A' : score >= 60 ? 'B' : score >= 50 ? 'C' : score >= 40 ? 'D' : 'F', years:parts[5] >= 100 ? TURNS : Math.round(parts[5] / 100 * TURNS), parts, me:false};
   }));
 }
 async function renderLeaders(){
@@ -3569,7 +3693,7 @@ async function renderLeaders(){
   if (S.net) clearInterval(S.net.wait);
   let rows = [];
   try { rows = await leaderRows(); } catch(e){ console.warn(e); }
-  if (S.net && !S.net.global && !rows.length){
+  if (S.net && !S.net.open && !rows.length){
     app.innerHTML = `<div class="screen"><span class="badge" style="justify-self:start">진짜 독재자 · 진짜 지도자 랭킹</span><h1>진짜 지도자 랭킹</h1><div class="power">선생님이 랭킹을 공개하면 여기에 나타납니다…</div></div>`;
     return waitRoom('revealed', renderLeaders);
   }
@@ -3587,7 +3711,7 @@ async function renderLeaders(){
     <div class="box"><div class="in"><table class="lead-t">
       <tr><th>순위</th><th>지도자</th><th>등급</th><th>점수</th><th>GDP 순위에서</th>${PART_NAMES.map(n => `<th class="pn">${n}</th>`).join('')}</tr>
       ${rows.map((r, i) => `<tr class="${r.me ? 'me' : ''} ${i < 3 ? 'podium' : ''}"><td>${i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}</td>
-        <td><b>${esc(r.name)}</b><small>${r.nation ? esc(r.nation) : ''}${r.ending ? (r.nation ? ' · ' : '') + esc(endName(r.ending)) : ''} · ${r.years}년 · GDP ${fmt(Math.round(r.gdp))}조</small></td>
+        <td><b>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(r.nation ? mateLabel(r) : r.name)}</b><small>${r.ending ? esc(endName(r.ending)) : ''} · ${r.years}년 · GDP ${fmt(Math.round(r.gdp))}조</small></td>
         <td class="g">${r.grade}</td><td class="n">${r.score}</td><td>${move(r)}</td>
         ${PART_NAMES.map((n, k) => `<td class="pn"><i style="width:${r.parts[k] || 0}%"></i><span>${r.parts[k] ?? '-'}</span></td>`).join('')}</tr>`).join('')}
     </table></div></div>
@@ -3636,7 +3760,7 @@ function nationCard(){
     <div class="land">${landSVG()}</div>
     <div class="box"><h3>국가소득 ${fmt(S.gdp)}조 원 <em>AI ${S.aiCount}번 · 정전 ${S.blackouts}번</em></h3><div class="in">${compareBars()}</div></div>
     <div class="box"><h3>가장 고민한 선택과 그 이유</h3><div class="in"><input type="text" id="refl" maxlength="200" placeholder="예: 데이터센터 유치를 거절했다. 냉각수 부족이 걱정됐다."></div></div>
-    ${S.net && !S.net.global ? `<button class="primary" id="submitcard">나라 카드 제출하기</button><div id="votewait"></div>` : S.net ? `<button class="primary" onclick="renderLeaders()">전체 진짜 지도자 랭킹 보기</button>` : `<p class="lead">실제 수업에서는 지도자 이름을 가린 채 이 카드가 친구들에게 공개되고, 1인 1표로 투표합니다.</p><button class="primary" onclick="renderLeaders()">진짜 지도자 랭킹 보기 (가상 학급)</button>`}
+    ${S.net && !S.net.open ? `<button class="primary" id="submitcard">나라 카드 제출하기</button><div id="votewait"></div>` : S.net ? `<button class="primary" onclick="renderLeaders()">${S.net.code === 'ALL' ? '모두의' : '우리 방'} 진짜 지도자 랭킹 보기</button>` : `<p class="lead">실제 수업에서는 지도자 이름을 가린 채 이 카드가 친구들에게 공개되고, 1인 1표로 투표합니다.</p><button class="primary" onclick="renderLeaders()">진짜 지도자 랭킹 보기 (가상 학급)</button>`}
     ${left() > 0 ? '<button class="primary" onclick="renderNewRun()">새 나라 세우기</button>' : ''}
     <button class="ghost" onclick="saveDex(endingOf(S).id);renderStart()">처음으로</button></div>`;
   const sb = document.getElementById('submitcard');
