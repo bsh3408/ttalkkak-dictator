@@ -3257,7 +3257,7 @@ async function renderRanking(){
   real = (real || []).filter(r => r.st && r.st.score != null);
   document.getElementById('rkbody').innerHTML = `<div class="rkcols">
     <div><h2>GDP 순위 <small>초보 독재자</small></h2>${list(gdp || [], r => fmt(Math.round(r.gdp)) + '조')}</div>
-    <div><h2>진짜 지도자 순위 <small>진짜 독재자 최종 점수</small></h2>${list(real, r => r.st.score + '점')}</div></div>`;
+    <div><h2>진짜 지도자 순위 <small>진짜 독재자 최종 점수</small></h2>${list(real, r => r.st.score + '점' + (r.st.grade ? ` · ${esc(r.st.grade)}` : ''))}</div></div>`;
 }
 // 마스터 전용: 방 코드로 그 방 학생들의 순위와 진행 상황을 본다 (15초마다 새로 고침)
 let RB_TIMER = null;
@@ -3295,8 +3295,8 @@ async function loadRoomBoard(c, quiet){
   const t1 = (b1 || []).length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', 'GDP', '진행'])}${b1.map((r, i) => `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${fmt(Math.round(r.gdp))}조</td><td class="v">${st(r)}</td></tr>`).join('')}</table>` : '<p class="lead">아직 초보 독재자 기록이 없습니다.</p>';
   const prog = Object.fromEntries((b2 || []).map(r => [r.name, r]));
   const real = (rv || []).slice().sort((a, b) => ((b.st && b.st.score) ?? -1) - ((a.st && a.st.score) ?? -1) || b.gdp - a.gdp);
-  const t2 = real.length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', '점수', '결말', '진행'])}${real.map((r, i) => { const pr = prog[r.name] || {}, e = r.ending && ENDINGS.find(x => x.id === r.ending);
-      return `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${r.st && r.st.score != null ? r.st.score + '점' : '–'}</td><td>${e ? esc(e.name) : '–'}</td><td class="v">${st(pr)}</td></tr>`; }).join('')}</table>` : '<p class="lead">아직 진짜 독재자 기록이 없습니다.</p>';
+  const t2 = real.length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', '점수', '급수', '진행'])}${real.map((r, i) => { const pr = prog[r.name] || {};
+      return `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${r.st && r.st.score != null ? r.st.score + '점' : '–'}</td><td class="v">${r.st && r.st.grade ? esc(r.st.grade) : '–'}</td><td class="v">${st(pr)}</td></tr>`; }).join('')}</table>` : '<p class="lead">아직 진짜 독재자 기록이 없습니다.</p>';
   body.innerHTML = `<div class="rbcols"><div><h2>초보 독재자 <small>GDP 순위</small></h2>${t1}</div><div><h2>진짜 독재자 <small>최종 점수 순위</small></h2>${t2}</div></div>`;
 }
 function renderNation(fresh){
