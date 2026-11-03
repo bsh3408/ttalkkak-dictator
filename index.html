@@ -208,6 +208,9 @@ details.stat[open] summary{margin-bottom:6px}
 @media (max-width:560px){.homemenu3{grid-template-columns:1fr!important}}
 .titles{display:flex;flex-wrap:wrap;gap:8px}.tchip{border:2px solid #1a1a1a;background:#fff;padding:6px 12px;display:grid}.tchip b{font:18px "Black Han Sans";color:#b0201f;font-weight:400}.tchip small{color:#6a6a6a;font-size:13px}
 .rkcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media (max-width:700px){.rkcols{grid-template-columns:1fr}}
+.rbform{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.rbform .f{flex:1;min-width:140px}
+.rbcols{display:grid;gap:22px}.rbcols h2{font:22px "Black Han Sans";margin:0 0 6px}.rbcols h2 small{font:500 13px "Noto Sans KR";color:#6a6a6a}
+.rbtab th{text-align:left;font-size:13px;color:#6a6a6a;padding:4px 8px;border-bottom:2px solid #1a1a1a}.rbdone{color:#b0201f}.rbplay{color:#555;font-weight:500}
 .rkcols h2{font:22px "Black Han Sans";margin:0 0 6px}.rkcols h2 small{font:500 13px "Noto Sans KR";color:#6a6a6a}
 .rktab{width:100%;border-collapse:collapse;background:#fff}.rktab td{border-bottom:1px solid #d8d2c4;padding:6px 8px;font-size:15px}.rktab td.rk{width:2.2em;text-align:center;font-weight:900}.rktab td.v{text-align:right;white-space:nowrap;font-weight:700}.rktab tr.me td{background:#f3dcd6;color:#8a1515}
 .q.qask{cursor:pointer}.q.qask:hover{text-decoration:underline;text-decoration-color:#b0201f;text-underline-offset:6px}
@@ -3221,6 +3224,7 @@ function renderHome(){
       <button onclick="renderTitles()"><b>칭호 수집</b><span>${loadTitles().length}개</span></button>
       <button onclick="renderRanking()"><b>전체 랭킹</b><span>모든 지도자 순위</span></button>
     </div>
+    ${isMaster() ? '<div class="mode"><button onclick="renderRoomBoard()"><b>방 순위 보기</b><span>방 코드를 넣으면 그 방 학생들의 순위와 진행 상황을 봅니다</span></button></div>' : ''}
     <button class="ghost" onclick="flushProfile();ACCOUNT=null;PICK=null;renderStart()">로그아웃</button></div>`;
 }
 function renderEndings(){
@@ -3254,6 +3258,46 @@ async function renderRanking(){
   document.getElementById('rkbody').innerHTML = `<div class="rkcols">
     <div><h2>GDP 순위 <small>초보 독재자</small></h2>${list(gdp || [], r => fmt(Math.round(r.gdp)) + '조')}</div>
     <div><h2>진짜 지도자 순위 <small>진짜 독재자 최종 점수</small></h2>${list(real, r => r.st.score + '점')}</div></div>`;
+}
+// 마스터 전용: 방 코드로 그 방 학생들의 순위와 진행 상황을 본다 (15초마다 새로 고침)
+let RB_TIMER = null;
+function renderRoomBoard(code){
+  if (!isMaster()) return renderHome();
+  clearInterval(RB_TIMER);
+  let last = ''; try { last = localStorage.getItem('ttalkkak_rbcode') || ''; } catch(e){}
+  app.innerHTML = `<div class="screen start" style="max-width:900px">
+    <span class="badge" style="justify-self:start">마스터 · 방 순위</span>
+    <h1>방 학생 순위</h1>
+    <div class="rbform"><label class="f">방 코드<input type="text" id="rbcode" inputmode="numeric" maxlength="4" placeholder="예: 1234" value="${esc(code || last)}"></label>
+      <button class="primary" id="rbgo">순위 보기</button></div>
+    <div id="rbmsg"></div><div id="rbbody"></div>
+    <button class="ghost" onclick="clearInterval(RB_TIMER);renderHome()">메뉴로</button></div>`;
+  const el = document.getElementById('rbcode');
+  const go = () => { const c = el.value.trim(); if (!/^\d{4}$/.test(c)){ document.getElementById('rbmsg').innerHTML = '<div class="power bad">숫자 네 자리를 넣어 주세요.</div>'; return; }
+    try { localStorage.setItem('ttalkkak_rbcode', c); } catch(e){}
+    clearInterval(RB_TIMER); loadRoomBoard(c); RB_TIMER = setInterval(() => document.getElementById('rbbody') ? loadRoomBoard(c, true) : clearInterval(RB_TIMER), 15000); };
+  document.getElementById('rbgo').onclick = go;
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  if (code || last) go(); else el.focus();
+}
+async function loadRoomBoard(c, quiet){
+  const msg = document.getElementById('rbmsg'), body = document.getElementById('rbbody'); if (!body) return;
+  if (!quiet) msg.innerHTML = '<div class="power">순위를 불러오는 중…</div>';
+  let room, b1, b2, rv;
+  try { [room, b1, b2, rv] = await Promise.all([supaRpc('tk_room', {p_code:c}), supaRpc('tk_board2', {p_code:c, p_mode:1}), supaRpc('tk_board2', {p_code:c, p_mode:2}), supaRpc('tk_reveal2', {p_code:c, p_mode:2})]); }
+  catch(e){ msg.innerHTML = '<div class="power bad">서버에 연결하지 못했습니다. 잠시 뒤 다시 해 주세요.</div>'; return; }
+  if (!document.getElementById('rbbody')) return;
+  if (!room || !room.ok){ msg.innerHTML = '<div class="power bad">방을 찾을 수 없습니다. 만든 지 일주일이 지난 방은 사라집니다.</div>'; body.innerHTML = ''; return; }
+  const t = new Date(), hm = `${t.getHours()}:${String(t.getMinutes()).padStart(2, '0')}`;
+  msg.innerHTML = `<div class="power">방 ${c} · 학생 ${new Set([...(b1 || []), ...(b2 || [])].map(r => r.name)).size}명 · ${hm} 기준 · 15초마다 새로 고침</div>`;
+  const st = r => r.done ? '<b class="rbdone">완료</b>' : `<span class="rbplay">${r.turn || 0}년째</span>`;
+  const head = cols => `<tr>${cols.map(h => `<th>${h}</th>`).join('')}</tr>`;
+  const t1 = (b1 || []).length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', 'GDP', '진행'])}${b1.map((r, i) => `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${fmt(Math.round(r.gdp))}조</td><td class="v">${st(r)}</td></tr>`).join('')}</table>` : '<p class="lead">아직 초보 독재자 기록이 없습니다.</p>';
+  const prog = Object.fromEntries((b2 || []).map(r => [r.name, r]));
+  const real = (rv || []).slice().sort((a, b) => ((b.st && b.st.score) ?? -1) - ((a.st && a.st.score) ?? -1) || b.gdp - a.gdp);
+  const t2 = real.length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', '점수', '결말', '진행'])}${real.map((r, i) => { const pr = prog[r.name] || {}, e = r.ending && ENDINGS.find(x => x.id === r.ending);
+      return `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${r.st && r.st.score != null ? r.st.score + '점' : '–'}</td><td>${e ? esc(e.name) : '–'}</td><td class="v">${st(pr)}</td></tr>`; }).join('')}</table>` : '<p class="lead">아직 진짜 독재자 기록이 없습니다.</p>';
+  body.innerHTML = `<div class="rbcols"><div><h2>초보 독재자 <small>GDP 순위</small></h2>${t1}</div><div><h2>진짜 독재자 <small>최종 점수 순위</small></h2>${t2}</div></div>`;
 }
 function renderNation(fresh){
   if (!PICK) return renderStart();
