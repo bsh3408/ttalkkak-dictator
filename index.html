@@ -205,7 +205,7 @@ details.stat[open] summary{margin-bottom:6px}
 .flagpick{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.flagpick .flag{border-width:2px}
 .flagbtn{width:auto;padding:4px;background:none;border:2px dashed #1a1a1a;cursor:pointer;line-height:0}.flagbtn:hover{border-style:solid}
 .flaggrid{border:1px solid #1a1a1a;background:#fff;padding:10px;display:grid;gap:8px}.flaggrid[hidden]{display:none}
-.fgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}.fgo{width:auto;padding:3px;background:none;border:1px solid #ccc;cursor:pointer;line-height:0}.fgo:hover{border-color:#b0201f;outline:2px solid #b0201f}
+.fgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px;max-height:300px;overflow-y:scroll;padding-right:6px;scrollbar-width:auto;scrollbar-color:#b0201f #efe8d6}.fgl::-webkit-scrollbar{width:12px}.fgl::-webkit-scrollbar-track{background:#efe8d6}.fgl::-webkit-scrollbar-thumb{background:#b0201f;border-radius:6px}.fgo{width:auto;padding:3px;background:none;border:1px solid #ccc;cursor:pointer;line-height:0}.fgo:hover{border-color:#b0201f;outline:2px solid #b0201f}
 .fgb{display:flex;gap:8px;flex-wrap:wrap}.fgb button{width:auto}
 .mottoline{background:#b0201f;color:#fff;font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;padding:3px 0}.mottoline span{display:inline-block;padding-left:100%;animation:mottorun 22s linear infinite}
 @keyframes mottorun{from{transform:translateX(0)}to{transform:translateX(-100%)}}@media (prefers-reduced-motion:reduce){.mottoline span{animation:none;padding-left:8px}}
@@ -227,6 +227,7 @@ details.stat[open] summary{margin-bottom:6px}
 @keyframes shake{from{transform:translateX(-.6px)}to{transform:translateX(.6px)}}@keyframes hop{from{transform:translateY(0)}to{transform:translateY(-2px)}}
 @media (prefers-reduced-motion:reduce){.land .shake,.land .hop{animation:none}}
 .mode button.resume{border:3px solid #b0201f;background:#fff4f0}.mode button.resume b{color:#b0201f}
+.qtier{border-collapse:collapse;font-size:14px;margin:4px 0 8px}.qtier td{border:1px solid #1a1a1a;padding:4px 10px;background:#fff}.qtier tr.me td{background:#b0201f;color:#fff;font-weight:900}
 .rbtime:empty{display:none}.tbx{display:grid;gap:6px;background:#fff;border:1px solid #1a1a1a;padding:10px 12px}.tbx>span{font-weight:900}.tbx small{font-weight:500;color:#6a6a6a}
 .tbc{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tbc b{font:26px "Black Han Sans";min-width:3em;text-align:center}.tbc button{width:auto;padding:6px 14px}
 .hsk{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media (max-width:640px){.hsk{grid-template-columns:1fr}}
@@ -2689,7 +2690,7 @@ function newGame(mode, name, motto){
         cap:{coal:35,lng:30,hydro:22,nuke:0,wind:0,solar:0,other:0}, demand:72, ess:0, grid:0, blackouts:0,
         decks:{1:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===1))), 2:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===2))), 3:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===3)))}, era:1, purges:0, falls:{}, aiStreak:0, boMark:0, gen:1, baseName:name||'이름 없는', medals:0, lastPlan:null, coupPending:null, nation:NATION, rankMove:null, gdpHist:[GDP0], slump:0, slumpNow:false, aiAsked:0, aiRefused:0, advice:(TURNS === 50 ? 7 : 3), adviceUsed:0, adviceText:null, noAi:0, maxNoAi:0, everSlump:false, plansOk:0, pending:[], flags:{}, plants:{}, events:shuffle(EVENTS.slice()),
         built:['hut','hut','hut','hut','town'].concat(Array(18).fill('tree')),
-        net:null, mates:[], log:[], used:{}, cause:null, maxChain:1, dominos:0, aiCount:0, ex:GDP0*0.30, im:GDP0*0.32, assets:GDP0*0.16, debt:GDP0*0.35, taxRate:0.15, taxRev:GDP0*0.15, start:SESSION.start, run:SESSION.runs.length + 1, sessionFalls:SESSION.falls, card:null, event:null, lastAdd:[], bots:makeBots() };
+        net:null, mates:[], log:[], used:{}, cause:null, maxChain:1, dominos:0, aiCount:0, ex:GDP0*0.30, im:GDP0*0.32, assets:GDP0*0.16*(1 + quizTier(SESSION && SESSION.right).asset / 100), debt:GDP0*0.35, taxRate:0.15, taxRev:GDP0*0.15, start:SESSION.start, run:SESSION.runs.length + 1, sessionFalls:SESSION.falls, card:null, event:null, lastAdd:[], bots:makeBots() };
   if (ROOM && NET_OK){ if (SESSION.net){ S.net = SESSION.net; S.mates = SESSION.mates || []; S.bots = []; } else netStart(); }
   nextCard();
 }
@@ -3839,8 +3840,8 @@ function renderNation(fresh){
     <button class="ghost" onclick="${ROOM && !inAll() ? 'renderRoomMenu()' : 'renderHome()'}">뒤로</button></div>`;
   if (ROOM && !inAll() && NET_OK) supaRpc('tk_room', {p_code:ROOM.code}).then(r => { if (r && r.ok){ ROOM.bmin = r.beginner_min ?? BASE_MIN; ROOM.owner = r.owner || ''; refreshLock(); } }).catch(() => {});
   const fg = document.getElementById('flaggrid');
-  const drawFlags = () => { const seeds = Array.from({length:24}, newFlag);
-    fg.innerHTML = `<div class="fgl">${seeds.map(sd => `<button class="fgo" data-s="${sd}" title="이 국기로">${flagSVG(sd, 72)}</button>`).join('')}</div><div class="fgb"><button class="ghost" id="fgmore">다른 국기 더 보기</button><button class="ghost" id="fgclose">닫기</button></div>`;
+  const drawFlags = () => { const seeds = Array.from({length:160}, newFlag);   // 작게 한꺼번에 펼치고, 칸 안에서 내려 가며 고른다
+    fg.innerHTML = `<div class="fgl">${seeds.map(sd => `<button class="fgo" data-s="${sd}" title="이 국기로">${flagSVG(sd, 48)}</button>`).join('')}</div><div class="fgb"><button class="ghost" id="fgmore">국기 새로 섞기</button><button class="ghost" id="fgclose">닫기</button></div>`;
     fg.querySelectorAll('.fgo').forEach(b => b.onclick = () => { MYFLAG = b.dataset.s; document.getElementById('flagbox').innerHTML = flagSVG(MYFLAG, 120); fg.hidden = true; SND.sfx('tick'); });
     document.getElementById('fgmore').onclick = () => { drawFlags(); SND.sfx('tick'); };
     document.getElementById('fgclose').onclick = () => { fg.hidden = true; }; };
@@ -3903,6 +3904,7 @@ function renderHumanSkill(nat){
 }
 // 얻기 어려운 칭호 (진짜 독재자에서만). why는 칭호를 받은 까닭으로 보여 준다
 const HARD_TITLES = [
+  {id:'quiz5',      t:'척척박사',   why:'독재자 능력 테스트의 편지 5통을 모두 맞히기', test:() => false},   // 주사위 화면에서 바로 준다
   {id:'hs_curious', t:'질문하는',   why:'휴먼스킬 호기심 90점 이상 (안건 30장 이상)',         test:(s, h) => h.curious >= 90 && s.log.filter(l => l.type === 'card').length >= 30},
   {id:'hs_reflect', t:'되돌아보는', why:'휴먼스킬 성찰적 사고 90점 이상 (돌아온 안건 4건 이상)', test:(s, h) => h.reflect >= 90 && (s.hsChainN || 0) >= 4},
   {id:'hs_whole',   t:'멀리 보는',  why:'휴먼스킬 통합적 사고 85점 이상',                       test:(s, h) => h.whole >= 85 && s.turn >= 30},
@@ -3927,7 +3929,8 @@ function renderQuiz(m, name){
   app.innerHTML = `<div class="screen">
     <span class="badge" style="justify-self:start">독재자 능력 테스트</span>
     <h1>지도자 동지께 편지가 도착했습니다</h1>
-    <p class="lead">편지를 눌러 열고 문제를 풀어 보세요. 많이 맞힐수록 더 높은 순위에서 시작합니다.</p>
+    <p class="lead">편지를 눌러 열고 문제를 풀어 보세요. 많이 맞힐수록 더 높은 순위에서, 더 많은 나라 자산을 가지고 시작합니다.</p>
+    <details class="fold"><summary>맞힌 개수별 보상 보기</summary>${tierTable(-1)}</details>
     <div class="letters" id="letters">${qs.map((Q, k) => `<button class="env" data-k="${k}" style="animation-delay:${k * .35}s"><span class="flap"></span><span class="seal">${k + 1}</span><small>${LETTER_FROM[k]}</small></button>`).join('')}</div>
     <div class="lead" id="lprog">읽은 편지 0 / ${LETTERS}</div>
     <button class="ghost" onclick="renderNation(false)">뒤로</button>
@@ -3971,14 +3974,28 @@ function renderQuiz(m, name){
   };
   document.querySelectorAll('.env').forEach(e => e.onclick = () => openLetter(+e.dataset.k));
 }
+// 독재자 능력 테스트 보상: 많이 맞힐수록 출발 순위 구간이 높아지고 나라 자산이 늘어난다
+const QUIZ_TIER = [
+  {lo:80, hi:80, asset:0},    // 0개: 80위 고정
+  {lo:74, hi:79, asset:5},    // 1개
+  {lo:69, hi:73, asset:10},   // 2개
+  {lo:63, hi:68, asset:15},   // 3개
+  {lo:56, hi:62, asset:20},   // 4개
+  {lo:50, hi:50, asset:30},   // 5개: 50위 고정 + 칭호 「척척박사」
+];
+const quizTier = right => QUIZ_TIER[Math.max(0, Math.min(5, right || 0))];
+const tierTable = right => `<table class="qtier">${QUIZ_TIER.map((t, k) => `<tr class="${k === right ? 'me' : ''}"><td>${k}개</td><td>${t.lo === t.hi ? `${t.lo}위 고정` : `${t.lo}~${t.hi}위`}</td><td>${t.asset ? `나라 자산 +${t.asset}%` : '–'}${k === 5 ? ' · 칭호 「척척박사」' : ''}</td></tr>`).join('')}</table>`;
 function renderDice(m, name, right){
   SESSION.right = right;
-  const rolls = Array.from({length:right + 1}, () => 60 + Math.floor(Math.random() * 21));
+  const T = quizTier(right), n = T.lo === T.hi ? 1 : right;
+  const rolls = Array.from({length:n}, () => T.lo + Math.floor(Math.random() * (T.hi - T.lo + 1)));
   const best = Math.min(...rolls);
+  if (right >= 5) saveTitles(['quiz5']);
   app.innerHTML = `<div class="screen">
     <span class="badge" style="justify-self:start">출발 순위 주사위</span>
-    <h2>맞힌 문제 ${right}개 → 주사위 ${right + 1}번</h2>
-    <p class="lead">주사위는 세계 60~80위 가운데 하나를 고릅니다. 가장 좋은 순위로 시작합니다.</p>
+    <h2>맞힌 문제 ${right}개 → ${T.lo === T.hi ? `세계 ${T.lo}위에서 출발` : `세계 ${T.lo}~${T.hi}위 주사위 ${n}번`}</h2>
+    <p class="lead">많이 맞힐수록 더 높은 순위에서, 더 많은 나라 자산을 가지고 시작합니다.${right >= 5 ? ' <b>만점! 칭호 「척척박사」를 얻었습니다.</b>' : ''}</p>
+    ${tierTable(right)}
     <div class="dice" id="dice"></div>
     <div id="dres"></div>
     <button class="ghost" onclick="clearTimers();renderNation(false)">처음부터 다시 고르기</button></div>`;
@@ -3990,7 +4007,7 @@ function renderDice(m, name, right){
       if (!document.getElementById('dres')) return;
       GDP0 = gdpForRank(best); START_RANK = best;
       SND.sfx('coin');
-      document.getElementById('dres').innerHTML = `<div class="result"><b>세계 ${START_RANK}위로 통치를 시작합니다.</b><p style="margin:4px 0 10px">${esc(NATION)}의 국가소득(GDP)은 ${fmt(Math.round(GDP0))}조 원, 나라 자산은 ${fmt(Math.round(GDP0 * 0.16))}조 원입니다. 해마다 수출 ${fmt(Math.round(GDP0 * 0.30))}조 원어치를 팔고 수입 ${fmt(Math.round(GDP0 * 0.32))}조 원어치를 사 옵니다. 바로 위는 ${WD[START_RANK - 2].name}, 바로 아래는 ${WD[START_RANK - 1].name}입니다.</p><button class="primary" id="dgo">통치 시작</button></div>`;
+      document.getElementById('dres').innerHTML = `<div class="result"><b>세계 ${START_RANK}위로 통치를 시작합니다.</b><p style="margin:4px 0 10px">${esc(NATION)}의 국가소득(GDP)은 ${fmt(Math.round(GDP0))}조 원, 나라 자산은 ${fmt(Math.round(GDP0 * 0.16 * (1 + quizTier(SESSION.right).asset / 100)))}조 원${quizTier(SESSION.right).asset ? `(능력 테스트 보상 +${quizTier(SESSION.right).asset}%)` : ''}입니다. 해마다 수출 ${fmt(Math.round(GDP0 * 0.30))}조 원어치를 팔고 수입 ${fmt(Math.round(GDP0 * 0.32))}조 원어치를 사 옵니다. 바로 위는 ${WD[START_RANK - 2].name}, 바로 아래는 ${WD[START_RANK - 1].name}입니다.</p><button class="primary" id="dgo">통치 시작</button></div>`;
       document.getElementById('dgo').onclick = () => launch(m, name);
     }, 350));
   }, 450 * k + 200)));
