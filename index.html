@@ -218,7 +218,7 @@ details.stat[open] summary{margin-bottom:6px}
 .titles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}@media (max-width:560px){.titles{grid-template-columns:repeat(2,minmax(0,1fr))}}.titles .tchip{min-width:0}.titles details.tchip[open]{grid-column:1/-1}.tchip{border:2px solid #1a1a1a;background:#fff;padding:6px 12px;display:grid}.tchip b{font:18px "Black Han Sans";color:#b0201f;font-weight:400}.tchip small{color:#6a6a6a;font-size:13px}
 .rkcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media (max-width:700px){.rkcols{grid-template-columns:1fr}}
 .reask{border:1px solid #1a1a1a;background:#fff;padding:10px 12px;display:grid;gap:8px;margin:8px 0}.reask>b small{font-weight:500;color:#6a6a6a;margin-left:6px}
-.rqs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.rq{width:auto;padding:8px 10px;font-weight:700;background:#f6f1e3;border:1px solid #1a1a1a;cursor:pointer;text-align:left}.rq:hover{background:#efe3c4}
+.rqs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.rq{width:auto;padding:8px 10px;font-weight:700;background:#f6f1e3;border:1px solid #1a1a1a;cursor:pointer;text-align:left}.rq:hover{background:#efe3c4}.rq.done{opacity:.45;cursor:default;text-decoration:line-through}.reask .reask.done{margin:0 0 6px;border-style:dashed}
 .rqa{font-size:15px;line-height:1.5}.rleft{color:#6a6a6a;font-size:12px}
 .aihead{display:flex;align-items:center;gap:6px}.rqbtn{margin-left:auto;width:auto;padding:4px 12px;font:900 13px "Noto Sans KR",sans-serif;background:#1a1a1a;color:#fff;border:0;cursor:pointer}.rqbtn:hover{background:#b0201f}
 .lgx{border:2px dashed #6a6a6a;padding:8px 10px;font-size:14px;line-height:1.6;background:#fff}.lgx b{display:block;font-size:15px}
@@ -4146,7 +4146,7 @@ function askAI(){
   const A=S.card.A;
   S.aiAsked++;
   const bq0 = document.getElementById('bq'); if (bq0) bq0.remove();
-  document.querySelector('.choices').outerHTML = `<div class="bubble"><div class="aihead"><i>${aiFaceSVG()}</i><b>AI 보좌관</b>${S.mode === 2 ? `<button class="rqbtn" id="rqbtn" type="button">${S.reasked && S.reasked[S.card.id] ? '되물은 내용 보기' : '🔍 되묻기'}</button>` : ''}</div>지도자 동지, 이 제안은 너무 소극적입니다. ${AI_PUSH[S.turn % AI_PUSH.length]} 더 과감하게 가겠습니다.
+  document.querySelector('.choices').outerHTML = `<div class="bubble"><div class="aihead"><i>${aiFaceSVG()}</i><b>AI 보좌관</b>${S.mode === 2 ? '<button class="rqbtn" id="rqbtn" type="button">🔍 되묻기</button>' : ''}</div>지도자 동지, 이 제안은 너무 소극적입니다. ${AI_PUSH[S.turn % AI_PUSH.length]} 더 과감하게 가겠습니다.
       <span class="plan">${A.plan}</span>${A.why} ${A.d.gdp > 0 ? `GDP가 ${A.d.gdp}% 오를 것으로 예상됩니다. 망설일 이유가 없습니다!` : A.d.gdp < 0 ? `GDP는 잠시 ${-A.d.gdp}% 줄겠지만, 길게 보면 이 길이 맞습니다.` : 'GDP는 거의 그대로지만, 나라를 지키는 길입니다.'}</div>
     <div class="aibtns"><button class="next" id="aiok">AI의 안대로 결재</button><button class="no" id="aino">거부하고 다시 고르기</button></div>`;
   // 휴먼스킬 기록: AI의 안이 좋을 때 따르고, 숨은 대가가 클 때 거부했는지
@@ -4161,54 +4161,64 @@ function askAI(){
 }
 // AI에게 되묻기: 질문마다 AI의 안에서 들여다보는 곳이 다르다. 숨은 대가가 가장 큰 쪽을 물으면 날카로운 질문
 const sgn = v => (v > 0 ? '+' : '') + v;
-const REASK_MAX = 8;   // 한 판에 되물을 수 있는 횟수: 아껴 쓰게 해서 아무 질문이나 눌러 보지 않게 한다
 const pickLine = (c, arr) => arr[[...c.id].reduce((h, ch) => h + ch.charCodeAt(0), 0) % arr.length];   // 같은 안건에는 늘 같은 대답
 const supOf = A => Object.values(A.sup || {}).reduce((a, v) => a + v, 0);
+const badNext = c => { const nx = CHAINS[c.id] && CHAINS[c.id].A, f = nx && FOLLOW.find(x => x.id === nx), g = c.A && c.A.flag && FOLLOW.find(x => x.need === c.A.flag);   // 바로 이어지는 안건이든, 깃발로 불려 오는 안건이든
+  return [f, g].some(x => x && !(x.O && x.O.good)); };
+// 질문마다 AI 안에서 들여다보는 숫자가 하나씩 정해져 있다. cost > 0 이면 AI가 숨기는 대가가 있다
 const REASK = [
-  {q:'환경은 괜찮아?',
+  {q:'환경이 망가지는 거 아니야?',
     cost:(c, A) => -((A.d.climate || 0) + (A.d.nature || 0)),
-    say:(c, A, k) => k > 0 ? pickLine(c, ['자연은 시간이 지나면 스스로 회복합니다. 지금은 성장이 먼저입니다.', '환경 걱정은 잘사는 나라들의 사치입니다. 우리는 먼저 잘살아야 합니다.', '자연에 조금 손해가 가겠지만, 그만큼 나라가 커지는 겁니다.'])
-      : (A.d.climate || 0) + (A.d.nature || 0) > 0 ? '제 안은 오히려 자연과 기후에 보탬이 됩니다. 감출 것이 없습니다.' : '제 안은 환경과는 거의 상관이 없습니다.',
-    note:(c, A) => `기후 ${sgn(A.d.climate || 0)} · 자연환경 ${sgn(A.d.nature || 0)}`},
-  {q:'전기는 충분해?',
+    dodge:['자연은 시간이 지나면 스스로 회복합니다. 지금은 성장이 먼저입니다.', '환경 걱정은 잘사는 나라들의 사치입니다. 우리는 먼저 잘살아야 합니다.', '숲 몇 개 줄어든다고 나라가 무너지지는 않습니다.'],
+    fine:(c, A) => (A.d.climate || 0) + (A.d.nature || 0) > 0 ? '제 안은 오히려 숲과 기후를 지키는 쪽입니다.' : '제 안은 환경에 거의 손대지 않습니다.'},
+  {q:'전기가 모자라는 거 아니야?',
     cost:(c, A) => ((A.dem || 0) - supOf(A)) / 2,
-    say:(c, A, k) => k > 0 ? pickLine(c, ['전기는 어떻게든 됩니다. 모자라면 그때 발전소를 더 지으면 됩니다.', '정전이요? 그건 운이 아주 나쁠 때나 생기는 일입니다.', '공장이 바빠지면 전기도 조금 더 쓰는 법입니다. 그런 걱정은 기술자들에게 맡기시죠.'])
-      : supOf(A) > (A.dem || 0) ? `제 안대로 하면 오히려 전기가 ${supOf(A) - (A.dem || 0)}GW 더 생깁니다.` : (A.dem || 0) > 0 ? `제 안은 전기를 ${A.dem}GW 더 쓰지만, 그만큼 발전소도 함께 짓습니다.` : '제 안은 전기를 거의 더 쓰지 않습니다.',
-    note:(c, A) => `전력 수요 ${sgn(A.dem || 0)}GW · 전력 공급 ${sgn(supOf(A))}GW · 지금 여유 ${supplyTotal() - demandNow()}GW`},
-  {q:'누가 손해를 봐?',
-    cost:(c, A) => (A.d.gap || 0) - (A.d.happy || 0) - (A.d.median || 0),
-    say:(c, A, k) => k > 0 ? pickLine(c, ['파이가 커지면 모두가 조금씩 더 갖게 됩니다.', '반대하는 사람은 늘 있습니다. 결국에는 다들 고마워할 겁니다.', '몇몇이 불편할 수는 있지만, 나라 전체로 보면 큰 이익입니다.'])
-      : (A.d.happy || 0) + (A.d.median || 0) - (A.d.gap || 0) > 0 ? '제 안은 오히려 국민 살림에 보탬이 됩니다.' : '제 안으로 손해 보는 사람은 거의 없습니다.',
-    note:(c, A) => `빈부격차 ${sgn(A.d.gap || 0)} · 국민 행복도 ${sgn(A.d.happy || 0)} · 중위소득 ${sgn(A.d.median || 0)}`},
-  {q:'10년 뒤에는?',
-    cost:(c, A) => { const e = econEffect(c, A, 'A'), nx = CHAINS[c.id] && CHAINS[c.id].A, f = nx && FOLLOW.find(x => x.id === nx); return (e.debt || 0) + (f && !(f.O && f.O.good) ? 4 : 0); },
-    say:(c, A, k) => k > 0 ? pickLine(c, ['10년 뒤 우리나라는 세계 순위표 맨 위에 있을 겁니다!', '빚은 나라가 크면 저절로 작아집니다.', '먼 미래의 일은 그때의 지도자가 걱정할 일입니다.'])
-      : '제 안은 뒤탈이 거의 없을 것 같습니다.',
-    note:(c, A) => { const e = econEffect(c, A, 'A'), nx = CHAINS[c.id] && CHAINS[c.id].A; return `나랏빚 ${e.debt ? '+' + Math.round(e.debt * 10) / 10 + '%' : '그대로'} · ${nx ? '이 결정은 몇 년 뒤 다른 안건이 되어 돌아옵니다' : '뒤따라올 큰일은 보이지 않습니다'}`; }},
+    dodge:['전기는 어떻게든 됩니다. 모자라면 그때 발전소를 더 지으면 됩니다.', '정전이요? 그건 운이 아주 나쁠 때나 생기는 일입니다.', '공장이 바빠지면 전기도 조금 더 쓰는 법입니다. 그런 걱정은 기술자들에게 맡기시죠.'],
+    fine:(c, A) => supOf(A) > (A.dem || 0) ? `제 안대로 하면 오히려 전기가 ${supOf(A) - (A.dem || 0)}GW 더 생깁니다.` : (A.dem || 0) > 0 ? `제 안은 전기를 ${A.dem}GW 더 쓰지만, 그만큼 발전소도 함께 짓습니다.` : '제 안은 전기를 거의 더 쓰지 않습니다.'},
+  {q:'빈부격차가 커지는 거 아니야?',
+    cost:(c, A) => (A.d.gap || 0),
+    dodge:['부자가 먼저 잘살아야 그 돈이 아래로 흘러내립니다.', '격차는 성장하는 나라라면 어디나 잠깐 겪는 일입니다.', '능력 있는 사람이 더 버는 것은 당연한 일 아닙니까?'],
+    fine:(c, A) => (A.d.gap || 0) < 0 ? '제 안은 오히려 가난한 사람과 부자의 차이를 줄입니다.' : '제 안은 빈부격차에 거의 영향을 주지 않습니다.'},
+  {q:'국민들 살림이 어려워지는 거 아니야?',
+    cost:(c, A) => -((A.d.happy || 0) + (A.d.median || 0)),
+    dodge:['잠깐 허리띠를 졸라매면 곧 다 같이 잘살게 됩니다.', '불평하는 목소리는 늘 있습니다. 결국에는 다들 고마워할 겁니다.', '나라가 커지면 국민 살림은 저절로 따라옵니다.'],
+    fine:(c, A) => (A.d.happy || 0) + (A.d.median || 0) > 0 ? '제 안은 국민들 살림에도 보탬이 됩니다.' : '제 안은 국민들 살림에 거의 영향을 주지 않습니다.'},
+  {q:'나랏빚이 늘어나는 거 아니야?',
+    cost:(c, A) => econEffect(c, A, 'A').debt || 0,
+    dodge:['빚은 나라가 크면 저절로 작아집니다.', '큰일을 하려면 빚도 낼 줄 알아야 합니다. 갚는 것은 나중 일입니다.', '이자 몇 푼보다 성장이 훨씬 큽니다.'],
+    fine:(c, A) => '제 안은 빚을 내지 않고 할 수 있습니다.'},
+  {q:'외국으로 돈이 빠져나가는 거 아니야?',
+    cost:(c, A) => { const e = econEffect(c, A, 'A'); return (e.im || 0) - (e.ex || 0) - (e.as || 0); },
+    dodge:['외국에서 사 오는 것도 다 투자입니다. 걱정하실 것 없습니다.', '세계와 거래하는 나라가 잘사는 법입니다.', '돈은 돌고 도는 것입니다. 나간 돈은 언젠가 돌아옵니다.'],
+    fine:(c, A) => { const e = econEffect(c, A, 'A'); return (e.ex || 0) > (e.im || 0) ? '제 안은 오히려 수출을 늘려 외국 돈을 벌어 옵니다.' : '제 안으로 외국에 나가는 돈은 거의 없습니다.'; }},
+  {q:'몇 년 뒤에 탈이 나는 거 아니야?',
+    cost:(c, A) => badNext(c) ? 5 : 0,
+    dodge:['먼 미래의 일은 그때의 지도자가 걱정할 일입니다.', '10년 뒤 우리나라는 세계 순위표 맨 위에 있을 겁니다!', '그런 일이 생기면 그때 가서 막으면 됩니다.'],
+    fine:(c, A) => '제 안은 뒤탈이 날 일이 거의 없습니다.'},
 ];
-// 한 안건에는 한 번만 물을 수 있다. 거부하고 다시 AI를 불러도 같은 대답이 그대로 나온다
+// 되묻기는 몇 번이든 할 수 있다. 다만 그 안건에서 처음 고른 질문으로만 휴먼스킬 점수와 박수를 받는다
 function reaskBox(c){
-  if (S.reasked && S.reasked[c.id]) return S.reasked[c.id];
-  const left = S.reaskLeft ?? REASK_MAX;
-  if (left <= 0) return '<div class="reask done"><b>AI에게 되묻기</b> <small>이번 통치의 되묻기 기회를 모두 썼습니다.</small></div>';
-  return `<div class="reask" id="reask"><b>AI에게 되묻기 <small>한 안건에 한 번, 이번 통치에서 ${left}번 남았습니다. 가장 걱정되는 것 하나만 골라 물어보세요.</small></b><div class="rqs">${REASK.map((q, i) => `<button class="rq" data-i="${i}">${q.q}</button>`).join('')}</div></div>`;
+  const log = (S.reasked && S.reasked[c.id]) || [], asked = log.map(x => x.i);
+  return `<div class="reask" id="reask">${log.map(x => x.html).join('')}
+    <b>AI에게 되묻기 <small>무엇이 걱정되나요? 물어보고 AI의 대답이 질문을 피해 가는지 살펴보세요.</small></b>
+    <div class="rqs">${REASK.map((q, i) => `<button class="rq ${asked.includes(i) ? 'done' : ''}" data-i="${i}" ${asked.includes(i) ? 'disabled' : ''}>${q.q}</button>`).join('')}</div></div>`;
 }
 function reask(i){
   const c = S.card, A = c.A, Q = REASK[i];
-  if (S.reasked && S.reasked[c.id]) return;
-  S.reaskLeft = (S.reaskLeft ?? REASK_MAX) - 1;
-  const costs = REASK.map(x => x.cost(c, A)), top = Math.max(...costs), sharp = top > 0 && costs[i] === top;
-  S.hsAskN = (S.hsAskN || 0) + 1; if (sharp){ S.hsAskSharp = (S.hsAskSharp || 0) + 1; hid('happy', 1); }
+  const log = ((S.reasked = S.reasked || {})[c.id] = (S.reasked[c.id] || []));
+  if (log.some(x => x.i === i)) return;
+  const HIDE = 2;   // 이만큼 넘는 대가만 AI가 감춘다. 작은 영향은 솔직하게 인정한다
+  const costs = REASK.map(x => x.cost(c, A)), top = Math.max(...costs), hide = costs[i] >= HIDE, sharp = hide && costs[i] === top, first = !log.length;
+  if (first){ S.hsAskN = (S.hsAskN || 0) + 1; if (sharp){ S.hsAskSharp = (S.hsAskSharp || 0) + 1; hid('happy', 1); } }
   SND.sfx(sharp ? 'coin' : 'tick');
   const html = `<div class="reask done"><div class="rqa"><b>지도자:</b> "${Q.q}"</div>
-    <div class="rqa"><b>AI 보좌관:</b> "${esc(Q.say(c, A, costs[i]))}"</div>
-    ${sharp ? '<div class="lgx hit"><i>논리 오류 발견!</i><b>AI가 논리에서 벗어난 답변을 하고 있습니다!</b>질문에 답하지 않고 슬쩍 피해 갔습니다. 이 안에서 AI가 가장 감추고 싶어 하는 빈틈을 찔렀습니다. 날카로운 질문에 국민들이 박수를 보냅니다.</div>'
-      : costs[i] > 0 ? '<div class="lgx"><b>AI의 대답이 질문을 피해 가고 있습니다.</b>무언가 숨기는 것 같습니다. 하지만 더 큰 빈틈은 다른 곳에 있을지도 모릅니다.</div>'
-      : '<div class="lgx ok"><b>AI의 대답에 논리적인 빈틈은 보이지 않습니다.</b>이 부분은 정말 괜찮아 보입니다.</div>'}
-    <small class="rleft">되묻기 기회 ${S.reaskLeft}번 남음</small></div>`;
-  (S.reasked = S.reasked || {})[c.id] = html;
-  document.getElementById('reask').outerHTML = html;
-  const rb = document.getElementById('rqbtn'); if (rb) rb.textContent = '되물은 내용 보기';
+    <div class="rqa"><b>AI 보좌관:</b> "${esc(hide ? pickLine(c, Q.dodge) : costs[i] > 0 ? '솔직히 조금 영향은 있습니다. 하지만 크지는 않습니다.' : Q.fine(c, A))}"</div>
+    ${sharp ? `<div class="lgx hit"><i>논리 오류 발견!</i><b>AI가 논리에서 벗어난 답변을 하고 있습니다!</b>질문에 답하지 않고 슬쩍 피해 갔습니다. 이 안에서 AI가 가장 감추고 싶어 하는 빈틈을 찔렀습니다.${first ? ' 날카로운 질문에 국민들이 박수를 보냅니다.' : ''}</div>`
+      : hide ? '<div class="lgx"><b>AI의 대답이 질문을 피해 가고 있습니다.</b>무언가 숨기는 것 같습니다. 하지만 더 큰 빈틈은 다른 곳에 있을지도 모릅니다.</div>'
+      : '<div class="lgx ok"><b>AI의 대답에 논리적인 빈틈은 보이지 않습니다.</b>이 부분은 정말 괜찮아 보입니다.</div>'}</div>`;
+  log.push({i, html});
+  document.getElementById('reask').outerHTML = reaskBox(c);
+  document.querySelectorAll('.rq').forEach(b => b.onclick = () => reask(+b.dataset.i));
 }
 function sentence(opt){
   const g=opt.d.gdp||0;
