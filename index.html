@@ -15,7 +15,8 @@
 body{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:var(--page);color:var(--ink);font-family:"IBM Plex Sans KR","Malgun Gothic",sans-serif;font-size:15px;line-height:1.65;-webkit-tap-highlight-color:transparent}
 button{font:inherit;cursor:pointer}
 button:focus-visible{outline:3px solid var(--ai);outline-offset:2px}
-.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px;position:sticky;top:0;z-index:50}
+.snd.home{background:#b0201f!important;color:#fff!important;border-color:#b0201f!important;font-weight:900}
 .top b{color:var(--green)} .top .file{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:1px 8px;color:var(--soft)}
 .top .note{margin-left:auto;color:var(--mute);font-size:12px;text-align:right}
 .top b,.top .file{white-space:nowrap}
@@ -135,7 +136,7 @@ button:focus-visible{outline:3px solid var(--ai);outline-offset:2px}
 .mode button b{display:block;font-size:16px}
 .mode button span{font-size:13px;color:var(--soft)}
 label.f{display:grid;gap:4px;font-size:13px;color:var(--soft)}
-input[type=text]{width:100%;font:inherit;padding:11px;border-radius:6px;border:1px solid var(--line);color:var(--ink)}
+input[type=text],input[type=password]{width:100%;font:inherit;padding:11px;border-radius:6px;border:1px solid var(--line);color:var(--ink)}
 .names{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:480px){.names{grid-template-columns:1fr}}
 .row{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--soft)}
@@ -143,7 +144,7 @@ input[type=text]{width:100%;font:inherit;padding:11px;border-radius:6px;border:1
 .ghost{border:1px solid var(--line);border-radius:6px;padding:11px;background:var(--page);color:var(--ink)}
 .big{font-size:40px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
 .rank{display:grid;font-variant-numeric:tabular-nums;font-size:14px}
-.rank:not(.wr) div{grid-template-columns:2.2em 1fr auto auto}
+.rank:not(.wr) div{grid-template-columns:2.2em 1fr auto auto}.roomrk div{padding:4px 10px;font-size:13px}
 .rank .rg{color:var(--x,#b0201f);font-weight:900;text-align:right;min-width:2.6em}
 .rank div{display:grid;grid-template-columns:2.2em 1fr auto;gap:8px;padding:6px 12px;border-bottom:1px solid var(--line)}
 .rank .me{background:var(--aibg);font-weight:700}
@@ -202,6 +203,12 @@ details.stat[open] summary{margin-bottom:6px}
 .bfly{font-size:15px;line-height:1.8;border-bottom:1px dashed var(--line)}.bfly span{white-space:nowrap}.bfly i{font-style:normal;margin:0 6px;color:var(--gold,#c90)}
 .flag{display:inline-block;vertical-align:middle;border:1px solid #1a1a1a;background:#fff}
 .flagpick{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.flagpick .flag{border-width:2px}
+.flagbtn{width:auto;padding:4px;background:none;border:2px dashed #1a1a1a;cursor:pointer;line-height:0}.flagbtn:hover{border-style:solid}
+.flaggrid{border:1px solid #1a1a1a;background:#fff;padding:10px;display:grid;gap:8px}.flaggrid[hidden]{display:none}
+.fgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}.fgo{width:auto;padding:3px;background:none;border:1px solid #ccc;cursor:pointer;line-height:0}.fgo:hover{border-color:#b0201f;outline:2px solid #b0201f}
+.fgb{display:flex;gap:8px;flex-wrap:wrap}.fgb button{width:auto}
+.mottoline{background:#b0201f;color:#fff;font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;padding:3px 0}.mottoline span{display:inline-block;padding-left:100%;animation:mottorun 22s linear infinite}
+@keyframes mottorun{from{transform:translateX(0)}to{transform:translateX(-100%)}}@media (prefers-reduced-motion:reduce){.mottoline span{animation:none;padding-left:8px}}
 .roomcode{font-size:56px!important;letter-spacing:.2em}
 .top .reign{font:700 17px "Noto Sans KR",sans-serif;color:#1a1a1a;border-left:2px solid #1a1a1a;padding-left:12px;white-space:nowrap}.top .reign b{font-family:"Black Han Sans";font-weight:400;color:#b0201f;font-size:20px}
 @media (max-width:560px){.top .reign{font-size:13px;padding-left:8px}.top .reign b{font-size:15px}}
@@ -215,6 +222,11 @@ details.stat[open] summary{margin-bottom:6px}
 .rqa{font-size:15px;line-height:1.5}.clip{position:relative;background:#fffdf3;border:1px dashed #1a1a1a;padding:10px 12px 8px;font-weight:900;font-size:15px;transform:rotate(-.6deg)}.clip span{display:block;font-size:12px;font-weight:700;color:#b0201f;margin-bottom:2px}
 .fgline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;text-align:center}.fgline div{display:grid;gap:2px;background:#fff;border:1px solid #1a1a1a;padding:8px}.fgline small{font-size:12px;color:#6a6a6a}.fgline b{font:28px "Black Han Sans",sans-serif}.fgline span{font-size:13px;font-weight:700}.fgline i{font-style:normal;font-size:26px;font-weight:900}.fgline .up b{color:#b0201f}.fgline .dn b{color:#2a4f8f}
 .dlnote{border:2px dashed #6b4fa0;background:#f5f1fb;color:#3d2a66;padding:8px 10px;font-size:14px;line-height:1.6}.dlnote>b:first-child{display:inline-block;background:#6b4fa0;color:#fff;padding:0 6px;margin-right:6px;font-size:12px}
+.landnote{background:#1a1a1a;color:#fff;font-size:13.5px;font-weight:700;padding:6px 10px;line-height:1.5}.landnote b{color:#F2C230;margin-right:6px}
+.land .shake{animation:shake .5s ease-in-out infinite alternate;transform-box:fill-box}.land .hop{animation:hop .6s ease-in-out infinite alternate;transform-box:fill-box}
+@keyframes shake{from{transform:translateX(-.6px)}to{transform:translateX(.6px)}}@keyframes hop{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){.land .shake,.land .hop{animation:none}}
+.mode button.resume{border:3px solid #b0201f;background:#fff4f0}.mode button.resume b{color:#b0201f}
 .rbtime:empty{display:none}.tbx{display:grid;gap:6px;background:#fff;border:1px solid #1a1a1a;padding:10px 12px}.tbx>span{font-weight:900}.tbx small{font-weight:500;color:#6a6a6a}
 .tbc{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tbc b{font:26px "Black Han Sans";min-width:3em;text-align:center}.tbc button{width:auto;padding:6px 14px}
 .hsk{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media (max-width:640px){.hsk{grid-template-columns:1fr}}
@@ -349,7 +361,7 @@ button,input{font-family:"Song Myung","Gungsuh",serif}
 .advice .aihead i{background:#1d3a4c}
 .rank .me{background:#4a2a0a;color:var(--gold)}
 .rank.wr .mate{background:#1d2030;color:#c8d4f0}
-input[type=text],select{background:#0b0505;color:var(--ink);border:2px solid var(--line);border-radius:0}
+input[type=text],input[type=password],select{background:#0b0505;color:var(--ink);border:2px solid var(--line);border-radius:0}
 .mode button{background:var(--page);border:2px solid var(--line);border-radius:0;color:var(--ink)}
 .mode button:hover{border-color:var(--gold)}
 .mode button b{color:var(--gold);font-weight:400;font-size:20px}
@@ -384,7 +396,7 @@ body{font-size:18px}
 .result p{font-size:19px}.power{font-size:17px}.delta span{font-size:15px}.news{font-size:16px}
 .log .e{font-size:15px}.log .d{font-size:14px}.log .y{font-size:13.5px}
 .screen h1{font-size:38px}.screen h2{font-size:22px}.lead{font-size:18px}
-label.f{font-size:16px}input[type=text]{font-size:18px}
+label.f{font-size:16px}input[type=text],input[type=password]{font-size:18px}
 .mode button b{font-size:23px}.mode button span{font-size:16px}.lockline{font-size:15px}
 .qopt{font-size:18px}.fold summary{font-size:17px}
 .banner{font-size:30px}.ticker{font-size:19px}
@@ -456,7 +468,7 @@ details.stat summary{color:#b0201f;font-weight:700}
 .log .e:first-child{background:#fff}.log .e.ev{background:#fff8e6}
 .rank .me{background:#f3dcd6;color:#b0201f}
 .rank.wr .mate{background:#e9eef6;color:#33507a}
-input[type=text],select{background:#fff;color:#1a1a1a;border:2px solid #1a1a1a;border-radius:0}
+input[type=text],input[type=password],select{background:#fff;color:#1a1a1a;border:2px solid #1a1a1a;border-radius:0}
 .mode button{background:#f9f5ea;border:0;border-top:4px solid #1a1a1a;color:#1a1a1a}
 .mode button b{color:#b0201f;font:26px "Black Han Sans"}
 .screen h1{font:40px/1.25 "Black Han Sans";color:#1a1a1a}
@@ -2171,6 +2183,28 @@ FOLLOW.push(
 });
 DOMINO.push('n_learngap','n_privacy','n_wagestrike','n_factoryleave','n_emptynet','n_heatisland','n_burnout','n_literacy','n_strawtown');
 
+// ───────── 안건 재조합: 따로 놀던 안건을 주제가 맞는 후속 안건에 잇는다 (승인으로도, 반려로도 이어진다) ─────────
+((add) => { for (const k in add) CHAINS[k] = Object.assign({}, CHAINS[k] || {}, add[k]); })({
+  grid:{O:'g_gridstable'}, pumpedhydro:{O:'g_gridstable'}, tou:{O:'g_gridstable'},
+  nukeold:{X:'heatpeak'}, dl_nukeextend:{X:'heatpeak'}, nukeai:{O:'aiblackout', A:'heatdeath'},
+  lng:{A:'debt'}, fuelsub:{X:'unrest', A:'debt'}, luxury:{O:'debt'}, aidloan:{O:'debt', A:'shortdebt'},
+  statuetax:{O:'unrest'}, fueltax:{O:'g_carbonfund', A:'unrest'}, carbonmarket:{O:'g_carbonfund'},
+  led:{O:'g_effsave'}, floatpv:{O:'g_greentech'}, ev:{O:'g_tradeboom'}, greenexport:{O:'g_tradeboom'}, port:{O:'g_tradeboom', A:'mafiastate'},
+  offset:{O:'g_ecotour'}, wetland:{O:'g_ecotour', X:'tidalflood'}, peat:{O:'haze', A:'haze', X:'g_ecotour'},
+  biomass:{A:'haze'}, rawexport:{A:'erosion', O:'erosion'}, cookstove:{X:'asthma'}, phaseout:{O:'g_newminers'},
+  fastfashion:{O:'factoryfire', A:'factoryfire'}, exportzone:{A:'factoryfire'},
+  smuggle:{O:'g_cleangov', X:'gang'}, steel:{O:'dust', A:'dust'}, cement:{O:'dust', A:'dust'}, dieselbus:{O:'dust'}, chemplant:{O:'dust', A:'sanction'},
+  chipimport:{O:'engineers'}, chipfab:{O:'engineers'}, battery:{O:'recycle'}, batteryrecycle:{A:'ewastekids'}, ewaste3:{A:'ewastekids'},
+  dl_robotfarm:{A:'landless'}, dl_cashcrop:{O:'foodprice', A:'landless'}, foodself:{X:'foodprice'},
+  ebike:{O:'g_cleanair'}, rail:{O:'g_cleanair'}, hydrogenbus:{O:'g_cleanair'}, bikeroad:{O:'g_cleanair'}, dl_carfree:{O:'g_cleanair'},
+  aitutor:{O:'n_digitalgap'}, urbanforest:{O:'g_rooftopforest'}, crypto2:{O:'cryptocrash', A:'cryptocrash'},
+  ai_judge:{O:'aibias', A:'aibias'}, dl_aidoctor:{A:'aibias'}, spaceport:{O:'n_satellite'},
+  nationalize:{O:'investorflee'}, plastic:{A:'sanction'}, refinery:{A:'sanction'}, oilreserve:{O:'g_shield'}, remit:{O:'braindrain'},
+  carbonborder:{X:'exportcrash'}, vat:{O:'g_welfarebuild'}, luxurytax:{O:'g_welfarebuild'}, landtax:{O:'g_welfarebuild', X:'housing'},
+  dl_redevelop:{O:'housing'}, welfare:{O:'g_healthy'}, rareearth:{O:'minewater', A:'minewater'}, spysell:{O:'spycaught', A:'spycaught'},
+  dl_foreignworker:{A:'refugeeriot'}, dl_robottax:{X:'unemploy'}, dl_minwage:{X:'riderstrike'},
+});
+
 // ───────── 점검 반영: 엘니뇨·인공강우·공통 연쇄 카드 ─────────
 BASE.push(
   {id:'elninoprep', era:2, p:'far', title:'엘니뇨 예보', q:'기상청이 내년에 엘니뇨가 온다고 예보했습니다. 엘니뇨가 오면 무역풍이 약해져 바닷물 온도와 비가 내리는 곳이 바뀝니다. 지도자 동지, 저수지를 미리 채우고 가뭄에 강한 볍씨를 나눠 줄 것을 승인하시겠습니까?',
@@ -2284,9 +2318,41 @@ const DRANK = [
 ];
 const drankOf = s => { const sc = scoreOf(s); return {...DRANK.find(r => sc >= r.min), score:sc}; };
 const futureTone = sc => sc >= 70 ? ['밝은 미래', '#2e7d3a'] : sc >= 50 ? ['엇갈린 미래', '#a87a1e'] : ['어두운 미래', '#b03a2e'];
+// 통치 성향: 경제·국민 삶·공정함·환경·현명한 결재 가운데 무엇을 챙기고 무엇을 놓쳤나
+// 이름은 [높은 급수(1~3급), 중간(4~6급), 낮은 급수(7~9급)] 순서
+const PROFILE = {
+  stamp:  {names:['운 좋은 도장꾼', '생각 없는 도장꾼', '도장 찍는 기계'], word:'서류를 깊이 따져 보지 않고 도장부터 찍었습니다.'},
+  none:   {names:['조용한 관리인', '이도 저도 아닌 지도자', '아무것도 지키지 못한 폭군'], word:'무엇 하나 제대로 챙기지 못한 채 시간이 흘렀습니다.'},
+  money:  {names:['황금 손 지도자', '돈만 챙긴 바보', '금고만 지킨 폭군'], word:'GDP는 쑥쑥 올렸지만 국민의 삶·공정함·환경은 뒷전이었습니다.'},
+  dirty:  {names:['굴뚝의 왕', '연기 속의 독재자', '잿빛 하늘의 폭군'], word:'공장 굴뚝은 쉬지 않았지만 하늘과 숲이 대가를 치렀습니다.'},
+  unfair: {names:['부자들의 친구', '부자 편 독재자', '재벌의 꼭두각시'], word:'나라는 부자가 됐지만 그 돈은 몇몇 사람에게만 흘러갔습니다.'},
+  green:  {names:['초록 성군', '나무만 지킨 가난뱅이', '숲속의 빈털터리'], word:'숲과 하늘은 지켰지만 나라 살림은 제자리걸음이었습니다.'},
+  kind:   {names:['인민의 어머니', '인정 많은 가난뱅이', '퍼 주다 망한 지도자'], word:'국민을 아꼈지만 그 살림을 이어 갈 돈을 벌지 못했습니다.'},
+  fair:   {names:['모두의 지도자', '나눠 먹다 굶은 지도자', '다 같이 가난하게 만든 폭군'], word:'누구도 소외되지 않았지만 나눌 몫 자체가 작았습니다.'},
+};
+// 보통 학생들의 점수(평균·표준편차, 시뮬레이션 750판)와 견주어 무엇이 유난히 높고 낮았는지 본다
+const PF_REF = {econ:[34, 27], life:[31, 14], fair:[48, 10], env:[68, 8]};
+function profileOf(s){
+  const G = gradeOf(s), g = n => (G.it.find(x => x.n === n) || {v:50}).v;
+  const v = {econ:g('경제 성장'), life:g('국민 삶'), fair:g('공정함'), env:g('환경과 기후'), wise:g('현명한 결재')};
+  const z = k => (v[k] - PF_REF[k][0]) / PF_REF[k][1];
+  const four = [['경제', 'econ'], ['국민 삶', 'life'], ['공정함', 'fair'], ['환경', 'env']].map(([n, k]) => [n, v[k], k, z(k)]).sort((a, b) => b[3] - a[3]);
+  const best = four[0], worst = four[3];
+  let k = null;
+  if (v.wise < 35) k = 'stamp';
+  else if (best[3] < -0.4) k = 'none';
+  else if (best[3] - worst[3] >= 1.2) k = best[2] === 'econ' ? (worst[2] === 'env' ? 'dirty' : worst[2] === 'fair' ? 'unfair' : 'money')
+                                     : {env:'green', life:'kind', fair:'fair'}[best[2]];
+  const raw = four.slice().sort((a, b) => b[1] - a[1]);   // 화면에 보여 줄 때는 실제 점수 순서
+  return {v, P:k && PROFILE[k], best, worst, hi:raw[0], lo:raw[3]};   // 네 가지가 고르면 원래 등급 이름
+}
+function drankName(s){
+  const r = drankOf(s), pf = profileOf(s), tier = r.lv <= 3 ? 0 : r.lv <= 6 ? 1 : 2;
+  return pf.P ? {name:pf.P.names[tier], word:pf.P.word, pf} : {name:r.name, word:r.word, pf};
+}
 function drankBox(s){
-  const r = drankOf(s), stars = '★'.repeat(10 - r.lv) + '☆'.repeat(r.lv - 1);
-  return `<div class="drank"><small>독재자 등급 · 최종 점수 ${r.score}점</small><b>${r.lv}급 「${r.name}」</b><span class="stars">${stars}</span><small>호칭 「${r.title}」 · ${r.word}</small></div>`;
+  const r = drankOf(s), stars = '★'.repeat(10 - r.lv) + '☆'.repeat(r.lv - 1), d = drankName(s);
+  return `<div class="drank"><small>독재자 등급 · 최종 점수 ${r.score}점</small><b>${r.lv}급 「${d.name}」</b><span class="stars">${stars}</span><small>${d.word}</small><small>가장 잘 챙긴 것: ${d.pf.hi[0]} ${d.pf.hi[1]}점 · 가장 못 챙긴 것: ${d.pf.lo[0]} ${d.pf.lo[1]}점</small></div>`;
 }
 const FUTURES = [
   {id:'f_top10', cat:'future', name:'세계 10대 선진국', sub:'다음 50년 동안 세계 10위 안에 든 2140년', hint:'나라의 바탕을 아주 튼튼하게 다져 50년 뒤 세계 10위 안에 들면', test:s=>s.over==='done' && futureProj(s).r1 <= 10 && futureProj(s).qual >= 75 && wiseScore(s) >= 70 && (s.corrupt || 0) <= 1 && rejects(s) >= 3,
@@ -2450,7 +2516,7 @@ const worldName = idx => (WD[Math.max(0, Math.min(WD.length - 1, idx))] || {}).n
 function worldRows(){
   const me = {name:`${S.nation} (${S.name})`, gdp:S.gdp, me:true};
   const all = WD.map((c, i) => ({name:c.name, gdp:c.k, idx:i, real:true}))
-    .concat(mates().map(b => ({name:mateLabel(b), gdp:b.gdp, mate:true})), [me])
+    .concat([me])
     .sort((a, b) => b.gdp - a.gdp);
   const i = all.indexOf(me);
   return all.slice(Math.max(0, i - 3), i + 4).map(r => ({...r,
@@ -2572,7 +2638,7 @@ const SND = (() => {
   }
   function drawButtons(){
     const el = document.getElementById('sndbtns'); if (!el) return;
-    el.innerHTML = `<button class="snd ${st.sfx?'on':''}" onclick="SND.toggle('sfx')">효과음 ${st.sfx?'켬':'끔'}</button><button class="snd ${st.bgm?'on':''}" onclick="SND.toggle('bgm')">배경음악 ${st.bgm?'켬':'끔'}</button>`;
+    el.innerHTML = `<button class="snd home" onclick="goHomeAny()">처음 화면</button><button class="snd ${st.sfx?'on':''}" onclick="SND.toggle('sfx')">효과음 ${st.sfx?'켬':'끔'}</button><button class="snd ${st.bgm?'on':''}" onclick="SND.toggle('bgm')">배경음악 ${st.bgm?'켬':'끔'}</button>`;
   }
   return { unlockAudio, sfx, music, toggle, drawButtons };
 })();
@@ -2773,8 +2839,15 @@ function flagGrid(seed){
   const fill = f => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){ const v = f(x, y); if (v) g[y][x] = v; } };
   const star = (cx, cy, col) => [[0,-2],[0,-1],[-2,0],[-1,0],[0,0],[1,0],[2,0],[-1,1],[1,1],[-1,2],[1,2]].forEach(([dx, dy]) => { const x = cx + dx, y = cy + dy; if (y >= 0 && y < H && x >= 0 && x < W) g[y][x] = col; });
   const disc = (cx, cy, rad, col) => fill((x, y) => (x + .5 - cx) ** 2 + (y + .5 - cy) ** 2 <= rad * rad ? col : 0);
-  const emblem = (cx, cy, col) => r() < .5 ? star(cx, cy, col) : disc(cx + .5, cy + .5, 1.8, col);
-  switch (pick(12)){
+  const ext = +seed > 1e9;   // 새로 만든 국기만 늘어난 무늬를 쓴다 (이미 고른 학생들의 국기는 그대로)
+  const put = (x, y, col) => { if (y >= 0 && y < H && x >= 0 && x < W) g[y][x] = col; };
+  const moon = (cx, cy, col) => { const bg = g[cy][cx]; disc(cx + .5, cy + .5, 2.3, col); disc(cx + 1.6, cy + .2, 1.9, bg); };
+  const sun = (cx, cy, col) => { disc(cx + .5, cy + .5, 1.7, col); [[0,-3],[0,3],[-3,0],[3,0],[-2,-2],[2,-2],[-2,2],[2,2]].forEach(([dx, dy]) => put(cx + dx, cy + dy, col)); };
+  const gear = (cx, cy, col) => { const bg = g[cy][cx]; disc(cx + .5, cy + .5, 2.2, col); [[0,-3],[0,3],[-3,0],[3,0]].forEach(([dx, dy]) => put(cx + dx, cy + dy, col)); put(cx, cy, bg); };
+  const wheat = (cx, cy, col) => { for (let k = -3; k <= 3; k++){ put(cx, cy + k, col); if (k % 2 === 0 && k < 3){ put(cx - 1, cy + k, col); put(cx + 1, cy + k, col); } } };
+  const EMB = [star, (cx, cy, col) => disc(cx + .5, cy + .5, 1.8, col), gear, sun, wheat];
+  const emblem = (cx, cy, col) => ext ? EMB[pick(EMB.length)](cx, cy, col) : (r() < .5 ? star(cx, cy, col) : disc(cx + .5, cy + .5, 1.8, col));
+  switch (pick(ext ? FLAG_KINDS : 12)){
     case 0: fill((x, y) => y < 3 ? a : y < 7 ? b : c); if (r() < .4) emblem(7, 5, d); break;                         // 가로 삼색기
     case 1: fill(x => x < 5 ? a : x < 10 ? b : c); if (r() < .4) emblem(7, 5, d); break;                              // 세로 삼색기
     case 2: fill((x, y) => y < 5 ? a : b); if (r() < .5) emblem(3, 2, c); break;                                     // 가로 이색기
@@ -2787,10 +2860,23 @@ function flagGrid(seed){
     case 8: fill((x, y) => (x >= 6 && x <= 8 && y >= 2 && y <= 7) || (y >= 4 && y <= 5 && x >= 4 && x <= 10) ? b : 0); break;   // 가운데 십자
     case 9: star(7, 5, b); if (r() < .5) fill((x, y) => y === 0 || y === H - 1 ? c : 0); break;                     // 큰 별
     case 10: fill((x, y) => Math.abs((x + .5) / W - (y + .5) / H) < .09 || Math.abs((x + .5) / W - 1 + (y + .5) / H) < .09 ? b : 0); break;   // 대각 십자
-    default: fill(x => x < 5 ? a : b); emblem(9, 5, c); break;                                                     // 세로 이색기 + 문장
+    case 11: fill(x => x < 5 ? a : b); emblem(9, 5, c); break;                                                     // 세로 이색기 + 문장
+    case 12: fill((x, y) => y % 2 ? b : a); fill((x, y) => x < 5 && y < 5 ? c : 0); emblem(2, 2, d); break;          // 다섯 줄 + 모서리 문장
+    case 13: fill((x, y) => (x + .5) / W + (y + .5) / H < 1 ? a : b); emblem(3, 2, c); break;                       // 대각선 반분
+    case 14: fill((x, y) => Math.abs(x + .5 - 7.5) / 7.5 + Math.abs(y + .5 - 5) / 5 <= 1 ? b : 0); emblem(7, 5, c); break;   // 가운데 마름모
+    case 15: fill((x, y) => x === 0 || y === 0 || x === W - 1 || y === H - 1 ? b : 0); emblem(7, 5, c); break;     // 테두리 + 문장
+    case 16: fill((x, y) => y < 5 ? b : c); fill(x => x < 4 ? a : 0); emblem(1, 4, d); break;                      // 깃대 쪽 세로 띠
+    case 17: sun(7, 5, b); if (r() < .5) fill((x, y) => y === H - 1 ? c : 0); break;                               // 가운데 해
+    case 18: fill((x, y) => x < 5 ? b : 0); moon(2, 4, c); star(9, 5, c); break;                                   // 초승달과 별
+    case 19: fill((x, y) => y < 2 || y > 7 ? b : 0); gear(7, 5, c); break;                                         // 톱니바퀴
+    case 20: fill((x, y) => y > 6 ? b : 0); wheat(4, 4, c); wheat(10, 4, c); break;                                // 밀 이삭 둘
+    case 21: fill((x, y) => { const m = Math.abs(y + .5 - 5); return x < 7 && m < 1.2 + (7 - x) * 0.5 ? b : 0; }); fill((x, y) => y >= 4 && y <= 5 && x >= 6 ? b : 0); fill((x, y) => x < 3 && Math.abs(y + .5 - 5) < 2 ? c : 0); break;   // 가로 Y자
+    case 22: fill((x, y) => (x < 8) === (y < 5) ? a : b); emblem(3, 2, c); break;                                  // 네 칸 체크
+    default: fill((x, y) => y >= 3 && y <= 6 ? b : 0); star(3, 4, c); star(7, 4, c); star(11, 4, c); break;        // 가운데 띠에 별 셋
   }
   return g;
 }
+const FLAG_KINDS = 24;
 function flagSVG(seed, w){
   const g = flagGrid(seed), H = g.length, W = g[0].length;
   let rects = '';
@@ -2849,7 +2935,7 @@ async function netPoll(){
   if (!S || !S.net) return;
   try {
     const rows = await supaRpc('tk_board2', {p_code:S.net.code, p_mode:S.mode});
-    S.mates = SESSION.mates = (rows || []).filter(r => r.name !== S.baseName).map(r => ({name:r.name, nation:r.nation, flag:r.flag, gdp:+r.gdp, done:r.done, grade:r.grade || ''}));
+    S.mates = SESSION.mates = (rows || []).filter(r => r.name !== S.baseName).map(r => ({name:r.name, nation:r.nation, flag:r.flag, gdp:+r.gdp, done:r.done, turn:r.turn || 0, grade:r.grade || ''}));
   } catch(e){ console.warn(e); }
 }
 function netPush(extra){
@@ -3066,7 +3152,7 @@ function nextCard(){
   if (S.turn >= TURNS){ S.over = 'done'; return renderFuture(); }
   S.turn++;
   S.demand += TURNS === 50 ? 0.5 : 1.6;   // 산업화로 해마다 전력 수요가 늘어남
-  S.adviceText = null;
+  S.adviceText = null; S.landNote = null;   // 새 안건을 읽는 동안에는 풍경 변화 문구를 숨긴다
   S.tmpDem = 0; S.tmpThermal = 1; S.tmpWind = undefined; S.tmpHydro = 1; S.event = null;
   S.weather = pickWeather();
   if (EVENT_TURNS.includes(S.turn) && S.events.length){
@@ -3154,6 +3240,7 @@ function econYear(e, g0){
 function choose(side){
   const c = S.card, opt = c[side];
   S.seeded = false;
+  const land0 = landState();
   // 휴먼스킬 기록: 돌아온 안건(나비효과)을 현명하게 결재했는지
   if (S.cause && c.O && c.X){ S.hsChainN = (S.hsChainN || 0) + 1; if (isWise(c, side)) S.hsChainOk = (S.hsChainOk || 0) + 1; }
   const rank0 = worldRank(S.gdp), gdpBefore = S.gdp;
@@ -3206,6 +3293,7 @@ function choose(side){
   if (S.turn % PLAN === 0) evalPlan();
   S.rankMove = {from:rank0, to:worldRank(S.gdp)};
   S.climateNote = climateImpact(out);
+  S.landNote = landDiff(land0, landState());
   if (S.climateNote && S.climateNote.ok !== null){ S.hsPrepN = (S.hsPrepN || 0) + 1; if (S.climateNote.ok) S.hsPrepOk = (S.hsPrepOk || 0) + 1; }
   // 휴먼스킬 기록: 경제·국민 삶·공정함·환경이 함께 괜찮았던 해
   const st = S.st, pv = S.hsPrev || ST0, life = x => (x.happy + x.median) / 2, env = x => (x.nature + x.climate) / 2;
@@ -3232,7 +3320,8 @@ function landSVG(){
   const el = [];
   const towns = Math.min(n('town'), 9);
   // 똑같이 생긴 판상형 인민 아파트, 지붕마다 붉은 깃발과 외벽 표어 현수막
-  for (let i=0;i<towns;i++){ const x=10+i*17, h=26+((i*7)%3)*8;
+  const sk = 1 + Math.min(1.2, Math.max(0, Math.log10(S.gdp / (S.gdp0 || GDP0))) * 0.9);   // GDP가 클수록 건물이 높아진다
+  for (let i=0;i<towns;i++){ const x=10+i*17, h=Math.round((26+((i*7)%3)*8)*sk);
     let win=''; for (let r=0;r<Math.floor((h-8)/6);r++) for (let c=0;c<3;c++) win+=`<rect x="${x+2+c*4}" y="${120-h+4+r*6}" width="2" height="3" fill="${(r+c+i)%4?'#E8D9A8':'#5A5248'}"/>`;
     el.push(`<g><rect x="${x}" y="${118-h}" width="15" height="${h}" fill="#8C857A"/><rect x="${x}" y="${118-h}" width="15" height="2" fill="#6E675C"/>${win}<rect x="${x+1}" y="${126-h+h/2}" width="13" height="4" fill="#C8202A"/><rect x="${x+1}" y="${127-h+h/2}" width="13" height="1" fill="#F2C230"/><rect x="${x+7}" y="${109-h}" width="1" height="9" fill="#555"/><rect x="${x+8}" y="${109-h}" width="6" height="4" fill="#C8202A"/></g>`); }
   // 지도자 초상화 대형 간판 (언제나 서 있다)
@@ -3260,12 +3349,42 @@ function landSVG(){
     el.push(`<g${pop('solar',i,solar)}><path d="M${sx} 146 h28 l-5 -10 h-28z" fill="#2B4C8C" stroke="#9DB7E6" stroke-width=".8"/></g>`); }
   const wind=Math.min(n('wind'),3); for (let i=0;i<wind*2;i++){ const wx=334+i*14;
     el.push(`<g${isNew('wind')?' class="pop"':''}><rect x="${wx-1}" y="126" width="2" height="24" fill="#F4F7F9"/><path class="spin" style="transform-origin:${wx}px 126px" d="M${wx} 126 l0 -11 M${wx} 126 l9.5 5.5 M${wx} 126 l-9.5 5.5" stroke="#F4F7F9" stroke-width="2.2" stroke-linecap="round"/><circle cx="${wx}" cy="126" r="1.4" fill="#DDE3E8"/></g>`); }
-  const trees = Math.min(n('tree'), 16);
+  const L = landState(), trees = L.trees;
   for (let i=0;i<trees;i++){ const tx=14+i*11+(i%2)*3, ty=138+(i%3)*8;
-    el.push(`<g><rect x="${tx-1}" y="${ty}" width="2" height="6" fill="#5B3E2B"/><circle cx="${tx}" cy="${ty-3}" r="6" fill="${S.st.nature<35?'#8C8F4A':'#3E8E4E'}"/></g>`); }
-  return `<svg viewBox="0 0 380 165" role="img" aria-label="나의 나라 모습"><rect width="380" height="165" fill="${sky}"/><rect width="380" height="40" fill="#C8504A" opacity="${(0.35*(1-Math.max(0,(55-S.st.climate))/55)).toFixed(2)}"/><circle cx="40" cy="34" r="14" fill="#F2C230" opacity=".85"/><rect y="118" width="322" height="47" fill="${grass}"/><rect x="322" y="118" width="58" height="47" fill="${sea}"/>${el.join('')}${pollutionSVG(smog, dirt)}</svg>`;
+    el.push(`<g><rect x="${tx-1}" y="${ty}" width="2" height="6" fill="#5B3E2B"/><circle cx="${tx}" cy="${ty-3}" r="${S.st.nature>=70?7:6}" fill="${S.st.nature<35?'#8C8F4A':'#3E8E4E'}"/></g>`); }
+  for (let i=0;i<L.stumps;i++){ const tx=14+(trees+i)*11+((trees+i)%2)*3, ty=146+((trees+i)%3)*6;
+    el.push(`<g><rect x="${tx-3}" y="${ty}" width="6" height="4" fill="#7A5A3A"/><ellipse cx="${tx}" cy="${ty}" rx="3" ry="1.2" fill="#C8A878"/></g>`); }
+  if (S.st.nature >= 65) for (let i=0;i<4;i++){ const bx=90+i*34, by=30+(i%2)*10; el.push(`<path class="bird" d="M${bx} ${by} q4 -4 8 0 q4 -4 8 0" stroke="#3A3A3A" stroke-width="1.5" fill="none"/>`); }
+  // 빈부격차: 커지면 판자촌과 금빛 고층 빌딩이 함께 들어선다
+  for (let i=0;i<L.shanty;i++){ const x=92+i*15; el.push(`<g><path d="M${x} 165 v-8 l6 -3 l6 3 v8z" fill="#8A7A66"/><rect x="${x}" y="154" width="12" height="2" fill="#5F6B73"/><rect x="${x+4}" y="160" width="3" height="5" fill="#3A3028"/></g>`); }
+  if (L.shanty >= 2){ const th = 40 + L.shanty * 9; el.push(`<g><rect x="228" y="${118-th}" width="12" height="${th}" fill="#C9A43A"/><rect x="230" y="${120-th}" width="8" height="${th-4}" fill="#E8CF72" opacity=".6"/><rect x="233" y="${110-th}" width="2" height="8" fill="#C9A43A"/></g>`); }
+  // 국민 행복도: 광장의 사람들 (시위대 ↔ 축제)
+  for (let i=0;i<L.crowd;i++){ const px=180+i*11, py=161, c=L.mood==='angry'?'#5A5A5A':L.mood==='happy'?['#C8202A','#2B6CB0','#2E8B57','#D4A017'][i%4]:'#7A6E66';
+    let g = `<circle cx="${px}" cy="${py-7}" r="2.4" fill="#E0BB93"/><rect x="${px-2}" y="${py-5}" width="4" height="7" fill="${c}"/>`;
+    if (L.mood === 'angry') g += `<rect x="${px-1}" y="${py-18}" width="1" height="9" fill="#5A4A3A"/><rect x="${px-5}" y="${py-22}" width="10" height="6" fill="#F4F1EA" stroke="#333" stroke-width=".5"/><path d="M${px-3} ${py-21} l6 4 M${px+3} ${py-21} l-6 4" stroke="#C8202A" stroke-width="1"/>`;
+    if (L.mood === 'happy') g += `<path d="M${px-2} ${py-4} l-3 -4 M${px+2} ${py-4} l3 -4" stroke="${c}" stroke-width="1.4"/><rect x="${px-4+(i%3)*3}" y="${py-16-(i%2)*4}" width="2" height="2" fill="${['#F2C230','#C8202A','#2B6CB0'][i%3]}"/>`;
+    el.push(`<g class="${L.mood === 'angry' ? 'shake' : L.mood === 'happy' ? 'hop' : ''}" style="animation-delay:${i * .12}s">${g}</g>`); }
+  return `<svg viewBox="0 0 380 165" role="img" aria-label="나의 나라 모습"><rect width="380" height="165" fill="${sky}"/><rect width="380" height="40" fill="#C8504A" opacity="${(0.35*(1-Math.max(0,(55-S.st.climate))/55)).toFixed(2)}"/><circle cx="40" cy="34" r="${14 + Math.max(0, 55 - S.st.climate) / 5}" fill="${S.st.climate < 35 ? '#E8602A' : '#F2C230'}" opacity=".85"/><rect y="118" width="322" height="47" fill="${grass}"/><rect x="322" y="118" width="58" height="47" fill="${sea}"/>${el.join('')}${L.sea ? `<rect x="${322 - L.sea * 4}" y="${165 - L.sea * 2.2}" width="${58 + L.sea * 4}" height="${L.sea * 2.2}" fill="${sea}" opacity=".9"/>` : ''}${pollutionSVG(smog, dirt)}</svg>`;
 }
 
+// 풍경을 정하는 값: 선택 전후를 비교해 "올해 풍경이 이렇게 바뀌었다"를 알려 준다
+function landState(){
+  const st = S.st, h = st.happy;
+  return {trees:Math.max(0, Math.min(15, Math.round(st.nature / 6.5))), stumps:Math.max(0, Math.min(6, Math.round((55 - st.nature) / 7))),
+    shanty:Math.max(0, Math.min(5, Math.round((st.gap - 48) / 6))), crowd:h < 35 ? 6 : h >= 60 ? 6 : 3, mood:h < 35 ? 'angry' : h >= 60 ? 'happy' : 'calm',
+    sea:Math.max(0, Math.min(8, Math.round((50 - st.climate) / 6))), towns:Math.min(9, S.built.filter(x => x === 'town').length)};
+}
+const BUILD_NAME = {coal:'석탄 발전소', dc:'데이터센터', solar:'태양광 패널', wind:'풍력 발전기', nuke:'원자력 발전소', dam:'댐', mine:'광산', factory:'공장', hut:'집', ess:'에너지 저장 장치', tower:'송전탑', geo:'지열 발전소', tank:'저장 탱크', town:'아파트'};
+function landDiff(a, b){
+  const out = [];
+  (S.lastAdd || []).forEach(t => BUILD_NAME[t] && out.push(`${BUILD_NAME[t]}이 들어섰습니다`));
+  if (b.towns > a.towns) out.push('아파트가 새로 올라갔습니다');
+  if (b.trees < a.trees) out.push(`나무 ${a.trees - b.trees}그루가 사라졌습니다`); else if (b.trees > a.trees) out.push(`나무 ${b.trees - a.trees}그루가 자랐습니다`);
+  if (b.shanty > a.shanty) out.push('도시 끝에 판자촌이 늘었습니다'); else if (b.shanty < a.shanty) out.push('판자촌이 줄었습니다');
+  if (b.mood !== a.mood) out.push({angry:'광장에 시위대가 모였습니다', happy:'광장에 축제가 열렸습니다', calm:'광장이 조용해졌습니다'}[b.mood]);
+  if (b.sea > a.sea) out.push('바닷물이 땅으로 올라왔습니다'); else if (b.sea < a.sea) out.push('바닷물이 물러났습니다');
+  return out.map(t => t.replace(/([가-힣])이 들어섰/, (m, c) => (((c.charCodeAt(0) - 0xAC00) % 28) ? c + '이' : c + '가') + ' 들어섰'));
+}
 function pollutionSVG(smog, dirt){
   let out = '';
   if (dirt > 0.45) for (let i = 0; i < Math.round(dirt * 8); i++) out += `<rect x="${326 + (i * 13) % 50}" y="${124 + (i * 7) % 36}" width="3" height="2" fill="#5A4A32"/>`;   // 바다 위 쓰레기
@@ -3278,7 +3397,14 @@ function pollutionSVG(smog, dirt){
 const app = document.getElementById('app');
 const fmt = n => n.toLocaleString('ko-KR');
 const clock = () => { const t=left(); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); };
-function myRank(){ return [...mates().map(b=>b.gdp), S.gdp].sort((a,b)=>b-a).indexOf(S.gdp)+1; }
+const myBest = () => S.net ? Math.max(SESSION.best || 0, S.gdp) : S.gdp;
+const roomWord = () => S.net ? '방' : '우리 반';
+function myRank(){ const g = myBest(); return [...mates().map(b=>b.gdp), g].sort((a,b)=>b-a).indexOf(g)+1; }
+function roomBox(){
+  if (!S.net || isAll()) return '';
+  const all = mates().map(b => ({...b, label:mateLabel(b)})).concat([{label:`${S.nation}(${S.baseName}) · 나`, flag:MYFLAG, gdp:myBest(), turn:S.turn, me:true}]).sort((a, b) => b.gdp - a.gdp);
+  return `<details class="box sbox" ${foldAttr('room')}><summary><h3>방 ${S.net.code} 순위 <em>${myRank()}등 / ${all.length}명 · 최고 GDP 기준</em></h3></summary><div class="rank roomrk">${all.map((r, i) => `<div class="${r.me ? 'me' : ''}"><span>${i + 1}</span><span>${r.flag ? flagSVG(r.flag, 20) + ' ' : ''}${esc(r.label)}</span><span class="rg">${r.me ? `${r.turn}년째` : r.done ? '완료' : r.turn ? `${r.turn}년째` : ''}</span><span>${fmt(Math.round(r.gdp))}조</span></div>`).join('')}</div></details>`;
+}
 function barsHTML(){
   return `<div class="bars">${STATS.map(s=>{const v=S.st[s.k], good=s.inv?100-v:v; return `<div class="r ${good<40?'bad':''}"><span>${s.n}</span><div class="t"><i style="width:${good}%"></i></div><b>${v}</b></div>`}).join('')}</div>`;
 }
@@ -3304,16 +3430,66 @@ function powerBox(){
 let FOLD = {};
 const foldOpen = k => FOLD[k] ? 'open' : '';
 const foldAttr = k => `${foldOpen(k)} ontoggle="FOLD['${k}']=this.open"`;
-function quitToMenu(){ if (!confirm('이번 통치를 그만두고 메뉴로 갈까요? 이번 판의 기록은 남지 않습니다.')) return; clearTimers(); PLAYING = false; if (S && S.net) clearInterval(S.net.timer); PICK ? renderHome() : renderStart(); }
+// 하던 통치를 이 브라우저에 저장해 두었다가 이어서 한다. 카드·사건은 번호만 저장한다
+const saveKey = () => 'ttalkkak_save_' + ((PICK && PICK.name) || '');
+let CARD_MAP = null;
+function saveGame(){
+  if (!S || S.over || !PICK || S.recorded) return;
+  try {
+    const rep = (k, v) => {
+      if (v && typeof v === 'object'){
+        if (typeof v.apply === 'function' && v.id) return {__e:v.id, res:v.res};
+        if (typeof v.id === 'string' && v.q && (CARD_MAP || (CARD_MAP = new Map([...BASE, ...FOLLOW].map(c => [c.id, c])))).get(v.id) === v) return {__c:v.id};
+      }
+      return v;
+    };
+    const ses = {...SESSION, net:null, runs:(SESSION.runs || []).map(r => ({...r, S:undefined}))};
+    localStorage.setItem(saveKey(), JSON.stringify({v:1, at:Date.now(), S:{...S, net:null}, SESSION:ses, ROOM, TIME_LIMIT, NATION, MYFLAG, GDP0, START_RANK}, rep));
+  } catch(e){ console.warn(e); }
+}
+function loadSave(){
+  try { const d = JSON.parse(localStorage.getItem(saveKey()) || 'null'); if (!d || d.v !== 1) return null;
+    if (Date.now() - d.S.start > (d.TIME_LIMIT || 1800) * 1000) { clearSave(); return null; }   // 시간이 다 지난 판은 지운다
+    return d; } catch(e){ return null; }
+}
+function clearSave(){ try { localStorage.removeItem(saveKey()); } catch(e){} }
+function resumeGame(){
+  const d = loadSave(); if (!d) return renderHome();
+  const cards = new Map([...BASE, ...FOLLOW].map(c => [c.id, c])), evs = new Map(EVENTS.map(e => [e.id, e]));
+  const rev = v => {
+    if (Array.isArray(v)) return v.map(rev);
+    if (v && typeof v === 'object'){
+      if (v.__c) return cards.get(v.__c);
+      if (v.__e){ const e = evs.get(v.__e); return v.res !== undefined ? {...e, res:v.res} : e; }
+      for (const k in v) v[k] = rev(v[k]);
+    }
+    return v;
+  };
+  const st = rev(d.S);
+  ROOM = d.ROOM; TIME_LIMIT = d.TIME_LIMIT; NATION = d.NATION; MYFLAG = d.MYFLAG; GDP0 = d.GDP0; START_RANK = d.START_RANK;
+  if (ROOM) setLength(50);
+  SESSION = rev(d.SESSION); SESSION.net = null;
+  S = st; S.net = null; S.mates = [];
+  SND.unlockAudio(); SND.music('play');
+  if (ROOM && NET_OK) netStart();
+  PLAYING = true;
+  renderPlay();
+}
+// 게임 중 새로고침·창 닫기: 브라우저가 한 번 묻는다 (통치는 저장되어 있어 다시 들어오면 이어서 할 수 있다)
+window.addEventListener('beforeunload', e => { if (PLAYING && S && !S.over){ saveGame(); e.preventDefault(); e.returnValue = ''; } });
+// 어느 화면에서든 처음 화면(로그인했으면 메뉴)으로
+function goHomeAny(){ if (PLAYING && S && !S.over) return quitToMenu(); clearTimers(); PLAYING = false; if (S && S.net) clearInterval(S.net.timer); PICK ? renderHome() : renderStart(); }
+function quitToMenu(){ if (!confirm('메뉴로 갈까요?\n\n지금까지의 통치는 저장됩니다. 메뉴의 「하던 통치 이어서 하기」로 이 해부터 다시 할 수 있습니다.\n남은 시간은 메뉴에 있는 동안에도 계속 흐릅니다.')) return; saveGame(); clearTimers(); PLAYING = false; if (S && S.net) clearInterval(S.net.timer); PICK ? renderHome() : renderStart(); }
 function statusPanel(){
   return `<details class="box sbox" ${foldAttr('me')}><summary><h3>지도자 신상 기록 <em>GDP ${fmt(Math.round(S.gdp))}조 · 나라 자산 ${fmt(Math.round(S.assets))}조 · 남은 시간 <span class="clock">${clock()}</span></em></h3></summary><div class="in">
     <div class="who"><div class="av"><svg width="26" height="30" viewBox="0 0 12 14" shape-rendering="crispEdges"><rect x="2" y="0" width="8" height="2" fill="#2F4A2F"/><rect x="1" y="2" width="10" height="1" fill="#C0392B"/><rect x="5" y="0" width="2" height="1" fill="#F2C94C"/><rect x="3" y="3" width="6" height="3" fill="#F1C9A5"/><rect x="4" y="4" width="1" height="1" fill="#222"/><rect x="7" y="4" width="1" height="1" fill="#222"/><rect x="5" y="5" width="2" height="1" fill="#3A2A1A"/><rect x="2" y="6" width="8" height="6" fill="#4B5D3A"/><rect x="1" y="6" width="2" height="1" fill="#F2C94C"/><rect x="9" y="6" width="2" height="1" fill="#F2C94C"/><rect x="3" y="8" width="1" height="1" fill="#F2C94C"/><rect x="4" y="8" width="1" height="1" fill="#E74C3C"/><rect x="3" y="9" width="2" height="1" fill="#5DADE2"/><rect x="3" y="12" width="2" height="2" fill="#222"/><rect x="7" y="12" width="2" height="2" fill="#222"/></svg></div>
       <div><b>${esc(S.name)}</b><small style="color:var(--ink)">${esc(S.nation)}</small><small>${ERA_NAMES[eraOf(Math.max(1,S.turn))]} · ${yearOf(S.turn)}년 · ${S.turn}년 차 / ${TURNS}년</small></div></div>
     <div class="gdpbig">${fmt(S.gdp)}<small> 조 원</small></div>
     <button class="ghost quitbtn" onclick="quitToMenu()">그만하고 메뉴로</button>
-    <div class="kv"><span>국가소득 증가</span><b>${growth(S)>0?'+':''}${growth(S)}%</b>${isAll() ? '' : `<span>우리 반 순위</span><b>${myRank()}등 / ${mates().length+1}명</b>`}<span>남은 시간</span><b class="clock">${clock()}</b></div>
+    <div class="kv"><span>국가소득 증가</span><b>${growth(S)>0?'+':''}${growth(S)}%</b>${isAll() ? '' : `<span>${roomWord()} 순위</span><b>${myRank()}등 / ${mates().length+1}명</b>`}<span>남은 시간</span><b class="clock">${clock()}</b></div>
     ${isOpen()?'':`<div class="mission">미션: ${esc(josa(S.nation, '을', '를'))} 세계의 강대국으로 만드십시오. 국가소득(GDP)이 곧 지도자의 위대함입니다. 통치 기간 안에 GDP를 최대로 높여 세계 순위를 끌어올리세요. 이 점수로 평가합니다.</div>`}
   </div></details>
+  ${roomBox()}
   <details class="box sbox" ${foldAttr('world')}><summary><h3>세계 GDP 순위 <em>지금 ${worldRank(S.gdp)}위 · 처음 ${START_RANK}위</em></h3></summary><div class="rank wr">${worldRows().map(r => `<div class="${r.me ? 'me' : r.mate ? 'mate' : ''}"><span>${r.rank}</span><span>${esc(r.name)}</span><span>${fmt(Math.round(r.gdp))}조</span></div>`).join('')}</div></details>
   ${econBox()}
   ${powerBox()}
@@ -3335,15 +3511,15 @@ const SLOGAN_BAD = ['공기는 맑다! 마스크는 애국이다', '불평하는
 function bannerHTML(){
   const bad = avgHidden(S) < 40, list = bad ? SLOGAN_BAD : SLOGAN_OK, sl = list[S.turn % list.length];
   const nextPlan = Math.ceil(Math.max(1, S.turn) / PLAN) * PLAN, target = worldRank(GDP0 * Math.pow(1.03, nextPlan));
-  const line = `★ ${yearOf(S.turn)}년 국가 생산량 ${fmt(S.gdp)}조 ★ 세계 ${worldRank(S.gdp)}위 ★ 5개년 계획 목표 세계 ${target}위 ★ ${esc(S.nation)} 만세 ★ 지도자 동지 만세 `;
-  return `<div class="banner">${sl}</div><div class="ticker"><span>${line}${line}</span></div>`;
+  const line = `${S.motto ? `★ 우리 나라의 길: “${esc(S.motto)}” ` : ''}★ ${yearOf(S.turn)}년 국가 생산량 ${fmt(S.gdp)}조 ★ 세계 ${worldRank(S.gdp)}위 ★ 5개년 계획 목표 세계 ${target}위 ★ ${esc(S.nation)} 만세 ★ 지도자 동지 만세 `;
+  return `<div class="banner">${sl}</div>${S.motto ? `<div class="mottoline"><span>“${esc(S.motto)}” · ${esc(josa(S.nation, '이', '가'))} 나아갈 길 · “${esc(S.motto)}” · ${esc(josa(S.nation, '이', '가'))} 나아갈 길 · </span></div>` : ''}<div class="ticker"><span>${line}${line}</span></div>`;
 }
 function layout(midHTML){
   const sup=supplyTotal(), dem=demandNow();
-  const mhud = `<div class="mhud"><span>GDP <b>${fmt(Math.round(S.gdp))}조</b> · 자산 <b>${fmt(Math.round(S.assets))}조</b> · 세계 <b>${worldRank(S.gdp)}위</b></span>${isAll() ? '' : `<span>우리 반 <b>${myRank()}등</b></span>`}<span>전력 <b class="${sup<dem?'neg':''}">${sup}/${dem}GW</b></span><span>${S.turn}/${TURNS}년 · <b class="clock">${clock()}</b></span></div>`;
+  const mhud = `<div class="mhud"><span>GDP <b>${fmt(Math.round(S.gdp))}조</b> · 자산 <b>${fmt(Math.round(S.assets))}조</b> · 세계 <b>${worldRank(S.gdp)}위</b></span>${isAll() ? '' : `<span>${roomWord()} <b>${myRank()}등</b></span>`}<span>전력 <b class="${sup<dem?'neg':''}">${sup}/${dem}GW</b></span><span>${S.turn}/${TURNS}년 · <b class="clock">${clock()}</b></span></div>`;
   const rg = document.getElementById('reign');
   if (rg){ rg.hidden = false; rg.innerHTML = `${S.net ? `<b class="rmode">[${isAll() ? '모두' : '방-' + S.net.code}]</b> ` : ''}${yearOf(S.turn)}년 · 통치 <b>${S.turn}년째</b> · 남은 <b>${Math.max(0, TURNS - S.turn)}년</b> · 남은 시간 <b class="clock">${clock()}</b>`; }
-  app.innerHTML = `<div class="game"><div class="col">${statusPanel()}</div><div class="mid">${mhud}${midHTML}<div class="land">${bannerHTML()}${landSVG()}</div></div><div class="logrow">${logPanel()}</div></div>`;
+  app.innerHTML = `<div class="game"><div class="col">${statusPanel()}</div><div class="mid">${mhud}${midHTML}<div class="land">${bannerHTML()}${landSVG()}${S.landNote && S.landNote.length ? `<div class="landnote"><b>올해 풍경</b> ${S.landNote.join(' · ')}</div>` : ''}</div></div><div class="logrow">${logPanel()}</div></div>`;
 }
 let timers=[];
 function clearTimers(){timers.forEach(t=>{clearInterval(t);clearTimeout(t)});timers=[]; const rg = document.getElementById('reign'); if (rg) rg.hidden = true;}   // 통치 연도 표시는 결재 화면에서만
@@ -3374,24 +3550,26 @@ function renderStart(){
       <p>2040년, 작은 개발도상국의 모든 권력이 당신 손에 있습니다.</p>
       <p>해마다 올라오는 서류에 승인·반려 도장을 찍거나, AI에게 물어보세요.</p>
       <p>목표는 50년 통치. 쫓겨나면 새 나라로 다시 도전합니다.</p></div></details>
-    <div class="mode">
-      <button onclick="goAll()"><b>모두와 하기</b><span>이 게임을 한 모든 지도자와 순위를 겨룹니다</span></button>
-      <button onclick="renderRoomMenu()"><b>방 만들어서 하기</b><span>같은 방 친구들끼리 순위를 나눕니다</span></button>
-    </div>
+    <div id="loginbox"></div>
   </div>`;
+  ROOM = null; AFTER_LOGIN = null;
+  renderLogin(document.getElementById('loginbox'));
 }
-function goAll(){ ROOM = NET_OK ? {code:'ALL', turns:50, open:true} : null; setLength(50); renderLogin(); }
+const lastRoom = () => { try { return JSON.parse(localStorage.getItem('ttalkkak_room_' + ((PICK && PICK.name) || '')) || 'null'); } catch(e){ return null; } };
+const rememberRoom = r => { try { localStorage.setItem('ttalkkak_room_' + ((PICK && PICK.name) || ''), JSON.stringify(r)); } catch(e){} };
+function goAll(){ ROOM = (NET_OK && !(PICK && PICK.offline)) ? {code:'ALL', turns:50, open:true} : null; setLength(50); renderNation(false); }
 function renderRoomMenu(){
   clearTimers();
   app.innerHTML = `<div class="screen start">
-    <span class="badge" style="justify-self:start">방 만들어서 하기</span>
+    <span class="badge" style="justify-self:start">친구랑 하기</span>
     <h1>방을 만들까요, 들어갈까요?</h1>
+    ${(() => { const lr = (ROOM && !inAll()) ? ROOM : lastRoom(); return lr ? `<div class="mode"><button class="resume" onclick="backToRoom()"><b>방 ${lr.code}로 돌아가기</b><span>${lr.owner && ACCOUNT && lr.owner === ACCOUNT.name ? '내가 방장인 방' : '마지막으로 들어갔던 방'}</span></button></div>` : ''; })()}
     <div class="mode">
-      <button onclick="makeRoom()"><b>방 만들기</b><span>방 코드를 받아 친구들에게 알려 줍니다</span></button>
-      <button onclick="renderJoin()"><b>참여하기</b><span>친구에게 받은 방 코드를 넣습니다</span></button>
+      <button onclick="makeRoom()"><b>방 만들기</b><span>방장이 되어 방 코드를 친구들에게 알려 줍니다</span></button>
+      <button onclick="renderJoin()"><b>방 참여하기</b><span>친구에게 받은 방 코드를 넣습니다</span></button>
     </div>
     <div id="roommsg"></div>
-    <button class="ghost" onclick="PICK?renderHome():renderStart()">처음으로</button></div>`;
+    <button class="ghost" onclick="PICK?renderHome():renderStart()">뒤로</button></div>`;
 }
 let AFTER_LOGIN = null;   // 'make': 로그인한 뒤 바로 방을 만든다
 async function makeRoom(){
@@ -3409,12 +3587,18 @@ async function makeRoom(){
     <div class="ending"><small>방 코드</small><b class="roomcode">${r.code}</b><small>친구들에게 이 코드를 알려 주세요 · ${until}에 자동으로 사라집니다</small></div>
     <div class="power up"><b>${esc(ACCOUNT.name)}</b> 님이 이 방의 방장입니다. 메뉴의 「방 관리」에서 친구들의 순위를 보고 초보 독재자 시간(지금 ${r.beginner_min ?? BASE_MIN}분)을 바꿀 수 있습니다.</div>
     <button class="primary" id="goroom">이 방으로 들어가기</button>
-    <button class="ghost" onclick="PICK?renderHome():renderStart()">처음으로</button></div>`;
-  document.getElementById('goroom').onclick = () => { ROOM = {code:r.code, turns:50, open:true, owner:ACCOUNT.name, bmin:r.beginner_min ?? BASE_MIN}; setLength(50); PICK = PICK || {name:ACCOUNT.name}; renderHome(); };
+    <button class="ghost" onclick="renderRoomMenu()">뒤로</button></div>`;
+  document.getElementById('goroom').onclick = () => { ROOM = {code:r.code, turns:50, open:true, owner:ACCOUNT.name, bmin:r.beginner_min ?? BASE_MIN}; rememberRoom(ROOM); setLength(50); PICK = PICK || {name:ACCOUNT.name}; renderNation(false); };
+}
+async function backToRoom(){
+  const lr = (ROOM && !inAll()) ? ROOM : lastRoom(); if (!lr) return;
+  let r = null; try { r = await supaRpc('tk_room', {p_code:lr.code}); } catch(e){}
+  if (!r || !r.ok){ document.getElementById('roommsg').innerHTML = '<div class="power bad">그 방은 사라졌습니다. 만든 지 일주일이 지난 방은 지워집니다.</div>'; try { localStorage.removeItem('ttalkkak_room_' + PICK.name); } catch(e){} return; }
+  ROOM = {code:lr.code, turns:r.turns, open:!!r.open, owner:r.owner || '', bmin:r.beginner_min ?? BASE_MIN}; setLength(50); renderNation(false);
 }
 function renderJoin(){
   app.innerHTML = `<div class="screen start">
-    <span class="badge" style="justify-self:start">참여하기</span>
+    <span class="badge" style="justify-self:start">방 참여하기</span>
     <h1>방 코드를 넣어 주세요</h1>
     <label class="f">방 코드<input type="text" id="rcode" inputmode="numeric" maxlength="4" placeholder="예: 1234"></label>
     <div id="joinmsg"></div>
@@ -3427,23 +3611,23 @@ function renderJoin(){
     let r = null;
     try { r = await supaRpc('tk_room', {p_code:rc}); } catch(e){ msg.innerHTML = '<div class="power bad">서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.</div>'; return; }
     if (!r || !r.ok){ msg.innerHTML = '<div class="power bad">방을 찾을 수 없습니다. 만든 지 일주일이 지난 방은 사라집니다.</div>'; return; }
-    ROOM = {code:rc, turns:r.turns, open:!!r.open, owner:r.owner || '', bmin:r.beginner_min ?? BASE_MIN}; setLength(r.turns);
-    renderLogin();
+    ROOM = {code:rc, turns:r.turns, open:!!r.open, owner:r.owner || '', bmin:r.beginner_min ?? BASE_MIN}; setLength(r.turns); rememberRoom(ROOM);
+    PICK ? renderNation(false) : renderLogin();   // 방에 들어가면 초보·진짜 독재자 고르기부터
   };
   document.getElementById('gojoin').onclick = go;
   el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 }
-function roomBadge(){ return AFTER_LOGIN === 'make' ? '방 만들기 · 방장 확인' : !ROOM ? '혼자 하기' : ROOM.code === 'ALL' ? '모두와 하기' : `방 ${ROOM.code}`; }
-function renderLogin(){
-  app.innerHTML = `<div class="screen start">
-    <span class="badge" style="justify-self:start">${roomBadge()}</span>
-    <h1>지도자 등록</h1>
+function roomBadge(){ return AFTER_LOGIN === 'make' ? '방 만들기 · 방장 확인' : !ROOM ? '혼자 하기' : ROOM.code === 'ALL' ? '모두와 하기' : `친구랑 하기 · 방 ${ROOM.code}${isOwner() ? ' (방장)' : ''}`; }
+function renderLogin(box){
+  (box || app).innerHTML = `<div class="screen start" ${box ? 'style="padding:0;border:0;background:none;box-shadow:none"' : ''}>
+    ${box ? '' : `<span class="badge" style="justify-self:start">${roomBadge()}</span>`}
+    <h${box ? 2 : 1}>지도자 등록</h${box ? 2 : 1}>
     <p class="lead">${AFTER_LOGIN === 'make' ? '방을 만든 사람이 방장이 됩니다. 방장의 이름과 비밀번호를 넣어 주세요. ' : ''}처음이면 지금 정한 이름과 비밀번호로 등록됩니다. 다음에도 똑같이 넣으면 기록이 이어집니다.</p>
     <label class="f">이름<input type="text" id="pname" maxlength="10" placeholder="예: 김하늘" value="" autocomplete="off"></label>
     <label class="f">비밀번호<input type="password" id="ppass" maxlength="20" placeholder="잊지 않을 비밀번호" autocomplete="current-password"></label>
     <div id="loginmsg"></div>
     <button class="primary" id="gologin">들어가기</button>
-    <button class="ghost" onclick="AFTER_LOGIN=null;PICK?renderHome():renderStart()">처음으로</button></div>`;
+    ${box ? '' : '<button class="ghost" onclick="AFTER_LOGIN=null;PICK?renderHome():renderStart()">뒤로</button>'}</div>`;
   const pn = document.getElementById('pname'), pp = document.getElementById('ppass');
   pn.focus();
   const go = async () => {
@@ -3463,7 +3647,7 @@ function renderLogin(){
   document.getElementById('gologin').onclick = go;
   [pn, pp].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
 }
-const newFlag = () => String(1 + Math.floor(Math.random() * 1e9));
+const newFlag = () => String(1e9 + 1 + Math.floor(Math.random() * 3e9));   // 1e9보다 큰 씨앗 = 새 무늬 24가지 (예전 국기는 그대로)
 // 로그인한 뒤의 메뉴: 새 나라 세우기 / 기존 나라 이어서 하기 / 엔딩 수집 / 칭호 수집 / 전체 랭킹
 function renderHome(){
   if (!PICK) return renderStart();
@@ -3471,20 +3655,22 @@ function renderHome(){
   const old = (ACCOUNT && ACCOUNT.nation) || '';
   const oldFlag = (ACCOUNT && ACCOUNT.flag) || '';
   app.innerHTML = `<div class="screen start">
-    <span class="badge" style="justify-self:start">${roomBadge()}</span>
+    <span class="badge" style="justify-self:start">지도자 ${esc(PICK.name)}</span>
     <h1>${esc(PICK.name)} 지도자 동지${PICK.isNew ? ', 환영합니다' : ', 어서 오십시오'}</h1>
     ${PICK.offline ? '<div class="power">서버에 연결하지 못해 혼자 하기로 진행합니다. 순위는 가상 학급과 겨룹니다.</div>' : ''}
     ${isMaster() ? '<div class="power up"><b>마스터 계정</b> · 진짜 독재자가 바로 열리고, 시간 제한 없이 50년을 끝까지 할 수 있습니다.</div>' : ''}
+    ${(() => { const d = loadSave(); if (!d) return ''; const lt = Math.max(0, d.TIME_LIMIT - Math.floor((Date.now() - d.S.start) / 1000));
+      return `<div class="mode"><button class="resume" onclick="resumeGame()"><b>하던 통치 이어서 하기</b><span>${esc(d.S.nation)} · ${d.S.mode === 1 ? '초보' : '진짜'} 독재자 · ${d.S.turn}년째 · ${d.ROOM ? (d.ROOM.code === 'ALL' ? '모두와 하기' : '방 ' + d.ROOM.code) : '혼자'} · 남은 시간 ${Math.floor(lt / 60)}분</span></button></div>`; })()}
     <div class="mode homemenu">
-      <button onclick="renderNation(true)"><b>새 나라 세우기</b><span>새 나라 이름을 짓고 새 국기를 받습니다</span></button>
-      <button onclick="renderNation(false)" ${old ? '' : 'disabled'}><b>기존 나라 이어서 하기</b><span>${old ? `${oldFlag ? flagSVG(oldFlag, 30) + ' ' : ''}${esc(old)}` : '아직 세운 나라가 없습니다'}</span></button>
+      <button onclick="goAll()"><b>모두와 하기</b><span>이 게임을 한 모든 지도자와 순위를 겨룹니다</span></button>
+      <button onclick="renderRoomMenu()" ${PICK.offline ? 'disabled' : ''}><b>친구랑 하기</b><span>${PICK.offline ? '서버에 연결되어야 할 수 있습니다' : '방을 만들거나 친구의 방에 들어갑니다'}</span></button>
     </div>
+    ${old ? `<p class="lead" style="margin:0">나의 나라: ${oldFlag ? flagSVG(oldFlag, 26) + ' ' : ''}<b>${esc(old)}</b></p>` : ''}
     <div class="mode homemenu3">
       <button onclick="renderEndings()"><b>엔딩 수집</b><span>${loadDex().length} / ${ENDINGS.length}</span></button>
       <button onclick="renderTitles()"><b>칭호 수집</b><span>${loadTitles().length}개</span></button>
       <button onclick="renderRanking()"><b>전체 랭킹</b><span>모든 지도자 순위</span></button>
     </div>
-    ${isOwner() ? `<div class="mode"><button onclick="renderRoomBoard('${ROOM.code}')"><b>방 관리 · 방 ${ROOM.code}</b><span>방 친구들의 순위를 보고 초보 독재자 시간을 정합니다</span></button></div>` : ''}
     ${isMaster() ? '<div class="mode"><button onclick="renderRoomBoard()"><b>방 순위 보기</b><span>방 코드를 넣으면 그 방 학생들의 순위를 보고 초보 독재자 시간을 정합니다</span></button></div>' : ''}
     <button class="ghost" onclick="flushProfile();ACCOUNT=null;PICK=null;renderStart()">로그아웃</button></div>`;
 }
@@ -3493,7 +3679,7 @@ function renderEndings(){
     <span class="badge" style="justify-self:start">엔딩 수집</span>
     <h1>내가 만난 결말 <em style="font-size:20px;font-style:normal">${loadDex().length} / ${ENDINGS.length}</em></h1>
     ${dexHTML()}
-    <button class="ghost" onclick="renderHome()">메뉴로</button></div>`;
+    <button class="ghost" onclick="renderHome()">뒤로</button></div>`;
 }
 function renderTitles(){
   const got = loadTitles();
@@ -3503,10 +3689,10 @@ function renderTitles(){
     <h1>내가 얻은 칭호 <em style="font-size:20px;font-style:normal">${got.length}개</em></h1>
     ${got.length ? `<div class="titles">${got.map(id => `<div class="tchip"><b>${esc(titleOf(id))}</b><small>${esc(from(id))}</small></div>`).join('')}</div>
       ${titleSelect()}<p class="lead">고른 칭호는 다음 나라를 세울 때 이름 앞에 붙습니다.</p>` : '<p class="lead">아직 얻은 칭호가 없습니다. 통치를 마치면 결말과 등급에 따라 칭호를 얻습니다.</p>'}
-    <button class="ghost" onclick="readTitle();renderHome()">메뉴로</button></div>`;
+    <button class="ghost" onclick="readTitle();renderHome()">뒤로</button></div>`;
 }
 async function renderRanking(){
-  app.innerHTML = `<div class="screen start" style="max-width:820px"><span class="badge" style="justify-self:start">전체 랭킹</span><h1>모든 지도자 순위</h1><div class="power" id="rkmsg">순위를 불러오는 중…</div><div id="rkbody"></div><button class="ghost" onclick="renderHome()">메뉴로</button></div>`;
+  app.innerHTML = `<div class="screen start" style="max-width:820px"><span class="badge" style="justify-self:start">전체 랭킹</span><h1>모든 지도자 순위</h1><div class="power" id="rkmsg">순위를 불러오는 중…</div><div id="rkbody"></div><button class="ghost" onclick="renderHome()">뒤로</button></div>`;
   if (!NET_OK || (PICK && PICK.offline)){ document.getElementById('rkmsg').textContent = '서버에 연결할 수 없어 순위를 볼 수 없습니다.'; return; }
   let gdp = [], real = [];
   try { [gdp, real] = await Promise.all([supaRpc('tk_board2', {p_code:'ALL', p_mode:1}), supaRpc('tk_reveal2', {p_code:'ALL', p_mode:2})]); }
@@ -3516,7 +3702,16 @@ async function renderRanking(){
   const row = (r, i, val) => `<tr class="${r.name === me ? 'me' : ''}"><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${val}</td></tr>`;
   const list = (rows, val) => rows.length ? `<table class="rktab">${rows.slice(0, 50).map((r, i) => row(r, i, val(r))).join('')}</table>` : '<p class="lead">아직 기록이 없습니다.</p>';
   real = (real || []).filter(r => r.st && r.st.score != null);
-  document.getElementById('rkbody').innerHTML = `<div class="rkcols">
+  let roomHTML = '';
+  if (ROOM && !inAll()){
+    try {
+      const [rg, rr] = await Promise.all([supaRpc('tk_board2', {p_code:ROOM.code, p_mode:1}), supaRpc('tk_reveal2', {p_code:ROOM.code, p_mode:2})]);
+      roomHTML = `<h2 style="margin:6px 0 0">방 ${ROOM.code} 순위</h2><div class="rkcols">
+        <div><h2>GDP 순위 <small>초보 독재자</small></h2>${list(rg || [], r => fmt(Math.round(r.gdp)) + '조')}</div>
+        <div><h2>진짜 지도자 순위 <small>진짜 독재자 최종 점수</small></h2>${list((rr || []).filter(r => r.st && r.st.score != null), r => r.st.score + '점' + (r.st.grade ? ` · ${esc(r.st.grade)}` : ''))}</div></div><h2 style="margin:14px 0 0">모든 지도자 순위</h2>`;
+    } catch(e){}
+  }
+  document.getElementById('rkbody').innerHTML = roomHTML + `<div class="rkcols">
     <div><h2>GDP 순위 <small>초보 독재자</small></h2>${list(gdp || [], r => fmt(Math.round(r.gdp)) + '조')}</div>
     <div><h2>진짜 지도자 순위 <small>진짜 독재자 최종 점수</small></h2>${list(real, r => r.st.score + '점' + (r.st.grade ? ` · ${esc(r.st.grade)}` : ''))}</div></div>`;
 }
@@ -3535,7 +3730,7 @@ function renderRoomBoard(code){
       <button class="primary" id="rbgo">순위 보기</button></div>
     ${own ? '' : '<div class="rbtime" id="rbdef"></div>'}
     <div id="rbmsg"></div><div class="rbtime" id="rbtime"></div><div id="rbbody"></div>
-    <button class="ghost" onclick="clearInterval(RB_TIMER);renderHome()">메뉴로</button></div>`;
+    <button class="ghost" onclick="clearInterval(RB_TIMER);${own ? 'renderNation(false)' : 'renderHome()'}">뒤로</button></div>`;
   const el = document.getElementById('rbcode');
   const go = () => { const c = el.value.trim(); if (!/^\d{4}$/.test(c)){ document.getElementById('rbmsg').innerHTML = '<div class="power bad">숫자 네 자리를 넣어 주세요.</div>'; return; }
     try { localStorage.setItem('ttalkkak_rbcode', c); } catch(e){}
@@ -3585,21 +3780,31 @@ async function loadRoomBoard(c, quiet){
 }
 function renderNation(fresh){
   if (!PICK) return renderStart();
-  const nat0 = fresh ? '' : ((ACCOUNT && ACCOUNT.nation) || savedNation());
+  const nat0 = fresh ? '' : (ACCOUNT ? (ACCOUNT.nation || '') : savedNation());   // 로그인했으면 이 컴퓨터의 다른 사람 나라 이름은 쓰지 않는다
   MYFLAG = fresh ? newFlag() : ((ACCOUNT && ACCOUNT.flag) || MYFLAG || newFlag());
   app.innerHTML = `<div class="screen start">
     <span class="badge" style="justify-self:start">${roomBadge()}</span>
-    <h1>${fresh ? '새 나라를 세웁니다' : '나라를 이어서 다스립니다'}</h1>
-    <div class="flagpick"><span id="flagbox">${flagSVG(MYFLAG, 120)}</span><button class="ghost" id="reflag">국기 다시 뽑기</button></div>
+    <h1>${fresh || !nat0 ? '새 나라를 세웁니다' : '이 나라로 새 통치를 시작합니다'}</h1>
+    ${loadSave() ? '<div class="power">하던 통치가 저장되어 있습니다. 여기서 새로 시작하면 저장된 통치는 지워집니다. 이어서 하려면 「뒤로」를 눌러 메뉴의 「하던 통치 이어서 하기」를 고르세요.</div>' : ''}
+    <div class="flagpick"><button class="flagbtn" id="flagbox" title="눌러서 국기 고르기">${flagSVG(MYFLAG, 120)}</button><span class="lead" style="margin:0">국기를 누르면<br>다른 국기를 고를 수 있습니다</span></div>
+    <div class="flaggrid" id="flaggrid" hidden></div>
     <label class="f">나라 이름<input type="text" id="nname" maxlength="8" placeholder="예: 누리국" value="${esc(nat0)}"></label>
     ${loadTitles().length ? titleSelect() : ''}
     <div class="mode">
       <button onclick="startMode(1)"><b>초보 독재자</b><span>GDP와 수출·수입·자산만 보입니다</span></button>
       <button onclick="startMode(2)" id="realbtn"><b>진짜 독재자</b><span>모든 지표가 보입니다</span><span class="lockline" id="lockline"></span></button>
     </div>
-    <button class="ghost" onclick="renderHome()">메뉴로</button></div>`;
+    ${isOwner() ? `<div class="mode"><button onclick="renderRoomBoard('${ROOM.code}')"><b>방 관리 · 방 ${ROOM.code}</b><span>방 친구들의 순위를 보고 초보 독재자 시간을 정합니다</span></button></div>` : ''}
+    ${fresh ? '' : '<button class="ghost" onclick="renderNation(true)">새 이름으로 새 나라 세우기</button>'}
+    <button class="ghost" onclick="${ROOM && !inAll() ? 'renderRoomMenu()' : 'renderHome()'}">뒤로</button></div>`;
   if (ROOM && !inAll() && NET_OK) supaRpc('tk_room', {p_code:ROOM.code}).then(r => { if (r && r.ok){ ROOM.bmin = r.beginner_min ?? BASE_MIN; ROOM.owner = r.owner || ''; refreshLock(); } }).catch(() => {});
-  document.getElementById('reflag').onclick = () => { MYFLAG = newFlag(); document.getElementById('flagbox').innerHTML = flagSVG(MYFLAG, 120); SND.unlockAudio(); SND.sfx('tick'); };
+  const fg = document.getElementById('flaggrid');
+  const drawFlags = () => { const seeds = Array.from({length:24}, newFlag);
+    fg.innerHTML = `<div class="fgl">${seeds.map(sd => `<button class="fgo" data-s="${sd}" title="이 국기로">${flagSVG(sd, 72)}</button>`).join('')}</div><div class="fgb"><button class="ghost" id="fgmore">다른 국기 더 보기</button><button class="ghost" id="fgclose">닫기</button></div>`;
+    fg.querySelectorAll('.fgo').forEach(b => b.onclick = () => { MYFLAG = b.dataset.s; document.getElementById('flagbox').innerHTML = flagSVG(MYFLAG, 120); fg.hidden = true; SND.sfx('tick'); });
+    document.getElementById('fgmore').onclick = () => { drawFlags(); SND.sfx('tick'); };
+    document.getElementById('fgclose').onclick = () => { fg.hidden = true; }; };
+  document.getElementById('flagbox').onclick = () => { SND.unlockAudio(); if (fg.hidden){ drawFlags(); fg.hidden = false; } else fg.hidden = true; };
   refreshLock();
 }
 async function startMode(m){
@@ -3617,7 +3822,8 @@ async function startMode(m){
     return;
   }
   readTitle();
-  if (m === 2 && inAll() && !isMaster() && beginnerSec(name) < BASE_MIN * 60) return renderHumanSkill(nat);
+  let seen = false; try { seen = !!localStorage.getItem('ttalkkak_hs_' + name); } catch(e){}
+  if (m === 2 && inAll() && !isMaster() && beginnerSec(name) < BASE_MIN * 60 && !seen){ try { localStorage.setItem('ttalkkak_hs_' + name, '1'); } catch(e){} return renderHumanSkill(nat); }
   launchMode(m, nat);
 }
 function launchMode(m, nat){
@@ -3625,7 +3831,9 @@ function launchMode(m, nat){
   NATION = nat;
   if (ACCOUNT){ ACCOUNT.nation = nat; ACCOUNT.flag = MYFLAG; syncProfile(); }
   TIME_LIMIT = isMaster() ? 24 * 3600 : (m === 1 && ROOM && !inAll() && roomMin() > 0) ? roomMin() * 60 : 30 * 60;   // 방의 초보 독재자는 방장이 정한 시간, 나머지는 30분, 마스터는 시간 제한 없음
-  SESSION = {start:null, runs:[], best:0, falls:0, right:0, mode:m, name, net:null, card:false};
+  const keep = SESSION && SESSION.mode === m && SESSION.room === (ROOM && ROOM.code) && SESSION.start && Date.now() - SESSION.start < TIME_LIMIT * 1000 ? SESSION.start : null;
+  SESSION = {start:keep, runs:[], best:0, falls:0, right:0, mode:m, name, net:null, card:false, room:ROOM && ROOM.code};
+  clearSave();
   try{ localStorage.setItem('ttalkkak_nation', NATION); }catch(e){}
   if (document.getElementById('fast') && document.getElementById('fast').checked){ LOCK_SEC=0.5; RESULT_SEC=0.8; } else { LOCK_SEC=1.5; RESULT_SEC=2.5; }
   renderQuiz(m, name);
@@ -3633,7 +3841,7 @@ function launchMode(m, nat){
 // 초보 독재자를 건너뛰고 진짜 독재자에 들어갈 때 보는 휴먼스킬 안내 (수업지도안의 휴먼스킬 6가지)
 const HUMAN_SKILLS = [
   ['호기심', '"왜 이렇게 됐지?"', '결과에서 숫자가 크게 바뀌면 그냥 넘기지 말고, 질문을 눌러 해설에서 원인을 찾아보세요.'],
-  ['성찰적 사고', '내 결재 되돌아보기', '나비효과로 돌아온 사건은 몇 년 전 내 결재의 결과입니다. 어떤 결재가 원인이었는지 되짚어 보세요.'],
+  ['성찰적 사고', '내 결재 되돌아보기', '몇 년 뒤 돌아온 안건은 예전 내 결재가 이어진 결과입니다. 어떤 결재가 원인이었는지 되짚어 보세요.'],
   ['통합적 사고', '여러 지표를 함께 보기', '경제·국민 삶·환경은 서로 이어져 있습니다. 하나를 올리면 다른 것이 떨어지지 않는지 함께 보세요.'],
   ['비판적 사고', 'AI의 제안 검증하기', 'AI 보좌관은 숫자를 크게 약속합니다. 탄소 배출, 전력, 격차 같은 숨은 대가가 무엇인지 따져 보세요.'],
   ['문제 해결 사고', '미리 대비하기', '올해 기후와 사건을 보고 댐, 저장 장치, 전력망처럼 피해를 막을 방법을 미리 골라 보세요.'],
@@ -3666,7 +3874,7 @@ const HARD_TITLES = [
   {id:'h_alone',    t:'홀로 선',    why:'AI에게 한 번도 맡기지 않고 50년 통치 완수, 3급 이상',   test:s => s.over === 'done' && !s.aiCount && drankOf(s).lv <= 3},
   {id:'h_comeback', t:'역전의',     why:'세계 60위 밖에서 출발해 20위 안으로, 국민 삶 60 이상',  test:s => (s.rank0 || 99) > 60 && worldRank(s.gdp) <= 20 && (s.st.happy + s.st.median) / 2 >= 60},
   {id:'h_balance',  t:'균형의',     why:'경제가 크면서 국민 삶·공정함·환경도 나빠지지 않은 해가 8년 연속', test:s => (s.hsRunMax || 0) >= 8},
-  {id:'h_virtuous', t:'선순환의',   why:'좋은 나비효과 5번 이상',                                test:s => new Set((s.butterfly || []).filter(x => x.good).map(x => x.path.map(p => p.title).join('>'))).size >= 5},
+  {id:'h_virtuous', t:'선순환의',   why:'좋은 연쇄 5번 이상',                                test:s => new Set((s.butterfly || []).filter(x => x.good).map(x => x.path.map(p => p.title).join('>'))).size >= 5},
   {id:'h_green',    t:'푸른 나라의', why:'GDP 5배 이상 성장, 환경과 기후 80점 이상',             test:s => s.gdp >= (s.gdp0 || GDP0) * 5 && (s.st.nature + s.st.climate) / 2 >= 80},
 ];
 HARD_TITLES.forEach(x => TITLE[x.id] = x.t);
@@ -3682,6 +3890,7 @@ function renderQuiz(m, name){
     <p class="lead">편지를 눌러 열고 문제를 풀어 보세요. 많이 맞힐수록 더 높은 순위에서 시작합니다.</p>
     <div class="letters" id="letters">${qs.map((Q, k) => `<button class="env" data-k="${k}" style="animation-delay:${k * .35}s"><span class="flap"></span><span class="seal">${k + 1}</span><small>${LETTER_FROM[k]}</small></button>`).join('')}</div>
     <div class="lead" id="lprog">읽은 편지 0 / ${LETTERS}</div>
+    <button class="ghost" onclick="renderNation(false)">뒤로</button>
     <div id="lopen"></div>
     <div id="lgo"></div></div>`;
   SND.unlockAudio();
@@ -3731,26 +3940,30 @@ function renderDice(m, name, right){
     <h2>맞힌 문제 ${right}개 → 주사위 ${right + 1}번</h2>
     <p class="lead">주사위는 세계 60~80위 가운데 하나를 고릅니다. 가장 좋은 순위로 시작합니다.</p>
     <div class="dice" id="dice"></div>
-    <div id="dres"></div></div>`;
+    <div id="dres"></div>
+    <button class="ghost" onclick="clearTimers();renderNation(false)">처음부터 다시 고르기</button></div>`;
   const box = document.getElementById('dice');
-  rolls.forEach((r, k) => setTimeout(() => {
+  rolls.forEach((r, k) => timers.push(setTimeout(() => {
+    if (!document.getElementById('dice')) return;   // 주사위 화면을 떠났으면 멈춘다
     box.insertAdjacentHTML('beforeend', `<span class="die ${r === best && k === rolls.indexOf(best) ? 'best' : ''}">${r}위</span>`); SND.sfx('tick');
-    if (k === rolls.length - 1) setTimeout(() => {
+    if (k === rolls.length - 1) timers.push(setTimeout(() => {
+      if (!document.getElementById('dres')) return;
       GDP0 = gdpForRank(best); START_RANK = best;
       SND.sfx('coin');
       document.getElementById('dres').innerHTML = `<div class="result"><b>세계 ${START_RANK}위로 통치를 시작합니다.</b><p style="margin:4px 0 10px">${esc(NATION)}의 국가소득(GDP)은 ${fmt(Math.round(GDP0))}조 원, 나라 자산은 ${fmt(Math.round(GDP0 * 0.16))}조 원입니다. 해마다 수출 ${fmt(Math.round(GDP0 * 0.30))}조 원어치를 팔고 수입 ${fmt(Math.round(GDP0 * 0.32))}조 원어치를 사 옵니다. 바로 위는 ${WD[START_RANK - 2].name}, 바로 아래는 ${WD[START_RANK - 1].name}입니다.</p><button class="primary" id="dgo">통치 시작</button></div>`;
       document.getElementById('dgo').onclick = () => launch(m, name);
-    }, 350);
-  }, 450 * k + 200));
+    }, 350));
+  }, 450 * k + 200)));
 }
 function launch(m, name){
-  if (m===2){
-    app.innerHTML = `<div class="screen"><h2>${esc(withTitle(name))}, 이번 통치의 이념을 한 줄로 정하세요</h2>
-      <p class="lead">투표 때 친구들이 이 문장을 보고 판단합니다.</p>
+  {
+    app.innerHTML = `<div class="screen"><h2>${esc(withTitle(name))}, 우리 나라가 나아갈 방향을 한 줄로 정하세요</h2>
+      <p class="lead">이 문장은 통치하는 내내 게임 화면의 전광판에 흘러갑니다.</p>
       <input type="text" id="motto" maxlength="40" value="국민 모두가 골고루 잘사는 나라">
-      <button class="primary" id="go">통치 시작</button></div>`;
-    document.getElementById('go').onclick=()=>newGame(2, name, document.getElementById('motto').value);
-  } else newGame(1, name, '');
+      <button class="primary" id="go">통치 시작</button>
+      <button class="ghost" onclick="renderNation(false)">뒤로</button></div>`;
+    document.getElementById('go').onclick=()=>newGame(m, name, document.getElementById('motto').value.trim());
+  }
 }
 
 // ───────── 안건 해설: 승인·반려를 누르면 무엇이 오르내릴 수 있는지 (숫자 없이 가능성으로) ─────────
@@ -3813,7 +4026,7 @@ function backHTML(){
   const path = (S.cause.path && S.cause.path.length) ? S.cause.path : [{title:S.cause.title || '예전의 결재', year:S.cause.year || yearOf(S.turn - 2), side:S.cause.side}], first = path[0], good = goodChain(S.card);
   const ago = yearOf(S.turn) - first.year;
   return `<div class="back ${good ? 'good' : ''}">
-    <b class="bk">🦋 ${good ? '좋은 나비효과' : '나비효과'} · ${S.cause.combo ? '여러 결재가 겹쳐 돌아온 일' : `${path.length + 1}단계 연쇄`}</b>
+    <b class="bk">${good ? '나의 선택이 좋은 연쇄를 일으켰습니다' : '나의 선택이 연쇄를 일으켰습니다'} · ${S.cause.combo ? '여러 결재가 겹쳐 돌아온 일' : `${path.length + 1}단계`}</b>
     <div class="trail">${path.map(p => `<span class="tn"><small>${p.year}년</small>「${esc(p.title)}」${miniStamp(p.side)}</span>`).join('<i>→</i>')}<i>→</i><span class="tn now"><small>${yearOf(S.turn)}년</small>지금 이 안건</span></div>
     <small>${first.side ? `${ago}년 전 지도자 동지가 찍은 「${{O:'승인', X:'반려', A:'AI 안'}[first.side]}」 도장 하나가 ` : `${ago}년 전의 일이 `}지금 이 안건이 되어 돌아왔습니다.</small></div>`;
 }
@@ -3827,7 +4040,7 @@ function chainSum(path){
 }
 // ───────── 한 턴 ─────────
 function renderPlay(again){
-  clearTimers();
+  clearTimers(); saveGame();
   const c=S.card, who=PEOPLE[c.p], ev=S.event;
   layout(`${ev?`<div class="event"><b>${yearOf(S.turn)}년의 사건 · ${ev.title}</b>${ev.text}<br><span class="wx">영향: ${ev.res}</span></div>`:''}
     <div class="card" id="card">
@@ -4034,9 +4247,9 @@ function renderResult(side, opt, pw){
     ${S.coupPending ? '<div class="power bad">궁전 밖이 심상치 않습니다. 멀리서 탱크 소리가 들립니다…</div>' : (S.slumpNow ? `<div class="news"><b>${esc(PAPER())}</b>${S.slump >= 3 ? '최근 몇 년 경제 성장이 기대에 못 미쳐… "살림살이가 나아지지 않는다"는 목소리가 커지고 있다' : '최근 3년 경제 성장이 기대보다 더뎌… 일자리를 걱정하는 사람들이 늘고 있다'}</div>` : (warnings().length ? `<div class="news"><b>${esc(PAPER())}</b>${warnings()[0]}</div>` : ''))}
     <div class="delta">${deltas.join('')}</div>
     ${S.card.dl && side !== 'A' ? `<div class="dlnote"><b>정답이 없는 안건</b> 승인해도 반려해도 나름의 까닭이 있습니다. 지도자 동지는 <b>「${S.card.dl[side === 'O' ? 0 : 1]}」</b>${josa(S.card.dl[side === 'O' ? 0 : 1], '을', '를').slice(-1)} 더 중요하게 여겼고, 대신 「${S.card.dl[side === 'O' ? 1 : 0]}」${josa(S.card.dl[side === 'O' ? 1 : 0], '을', '를').slice(-1)} 조금 내려놓았습니다.</div>` : ''}
-    ${S.cause && !S.cause.combo ? `<div class="bsum"><b>🦋 이 연쇄가 지금까지 바꾼 것</b><small>${(S.cause.path || []).map(p => `「${esc(p.title)}」`).join(' → ')} → 「${esc(S.card.title)}」</small><div class="delta">${chainSum([...(S.cause.path || []), {title:S.card.title, year:yearOf(S.turn)}])}</div></div>` : ''}
+    ${S.cause && !S.cause.combo ? `<div class="bsum"><b>나의 선택이 이어져 지금까지 바꾼 것</b><small>${(S.cause.path || []).map(p => `「${esc(p.title)}」`).join(' → ')} → 「${esc(S.card.title)}」</small><div class="delta">${chainSum([...(S.cause.path || []), {title:S.card.title, year:yearOf(S.turn)}])}</div></div>` : ''}
     ${S.balBonus ? `<div class="power up">균형 성장 ${S.hsRun}년째: 경제가 크면서 국민 삶·공정함·환경도 나빠지지 않았습니다. 투자와 인재가 몰려 GDP +${Math.round(S.balBonus * 1000) / 10}%</div>` : ''}
-    ${S.seeded ? '<div class="seed">🦋 이 도장이 씨앗이 되었습니다. 몇 년 뒤 다른 일이 되어 돌아옵니다.</div>' : ''}
+    ${S.seeded ? '<div class="seed">이 선택은 몇 년 뒤 다른 일로 이어집니다.</div>' : ''}
     <button class="next" id="nx" disabled>다음 해로<i class="lock"></i></button>
   </div>`);
   tickClock();
@@ -4047,7 +4260,7 @@ function renderResult(side, opt, pw){
 
 // ───────── 끝 화면 ─────────
 function rankList(){
-  const all=[...mates().map(b=>({name:mateLabel(b),flag:b.flag,gdp:b.gdp,grade:b.grade||''})), {name:`${S.nation}(${S.name}) · 나`,flag:MYFLAG,gdp:S.gdp,grade:drankOf(S).lv+'급',me:true}].sort((a,b)=>b.gdp-a.gdp);
+  const all=[...mates().map(b=>({name:mateLabel(b),flag:b.flag,gdp:b.gdp,grade:b.grade||''})), {name:`${S.nation}(${S.name}) · 나`,flag:MYFLAG,gdp:myBest(),grade:drankOf(S).lv+'급',me:true}].sort((a,b)=>b.gdp-a.gdp);
   const rank=all.findIndex(x=>x.me)+1;
   const show = all.slice(0,5).concat(rank>5?[all[rank-1]]:[]);
   return {rank, total:all.length, html:`<div class="rank">${show.map(r=>`<div class="${r.me?'me':''}"><span>${all.indexOf(r)+1}</span><span>${r.flag ? flagSVG(r.flag, 24) + ' ' : ''}${esc(r.name)}</span><span class="rg">${r.grade?esc(r.grade):''}</span><span>${fmt(r.gdp)}조</span></div>`).join('')}</div>`};
@@ -4060,7 +4273,7 @@ function endGame(){
   recordRun();
   const lastEnd = endingOf(S), lastYears = S.turn;
   // 초보 독재자 공개 화면과 투표는 이번 수업에서 GDP가 가장 높았던 판으로 보여 준다
-  if (S.mode === 1 && SESSION.runs.length){ const top = SESSION.runs.slice().sort((a, b) => b.gdp - a.gdp)[0].S; if (top !== S) S = top; }
+  if (S.mode === 1 && SESSION.runs.length){ const top = SESSION.runs.slice().sort((a, b) => b.gdp - a.gdp)[0].S; if (top && top !== S) S = top; }
   netPush({done:true, ending:endingOf(S).id, motto:S.motto || null});
   if (S.net && !S.net.open && S.mode === 1) setTimeout(() => waitRoom('revealed', reveal), 300);
   SND.music('end'); SND.sfx('end');
@@ -4071,12 +4284,12 @@ function endGame(){
     ${lastEnd && lastEnd.id === 'timeup' ? `<div class="ending"><small>시간 초과 엔딩 · ${lastYears}년째에서 멈춤</small><b>${lastEnd.name}</b><small>${lastEnd.text}</small></div>` : ''}
     ${S.mode === 1 ? '' : drankBox(S)}
     ${S.justUnlocked ? '<div class="power up"><b>진짜 독재자가 열렸습니다!</b> 이제 국민 생활 지표가 모두 보이는 진짜 독재자를 할 수 있습니다.</div>' : ''}
-    ${isAll() ? '' : `<div class="box"><h3>우리 반 GDP 순위</h3>${R.html}</div>`}
+    ${isAll() ? '' : `<div class="box"><h3>${roomWord()} GDP 순위</h3>${R.html}</div>`}
     ${S.mode===2 ? `<button class="ghost" onclick="renderLeaders()">진짜 지도자 랭킹 보기</button>` : ''}
     ${S.mode===1 ? (S.net && !S.net.open ? `<div class="power" id="waitbox">선생님이 숨겨진 지표를 공개할 때까지 기다려 주세요…</div>` : `<button class="primary" onclick="reveal()">${S.net && S.net.open ? '숨겨진 지표 보기' : '숨겨진 지표 공개 (교사 버튼)'}</button>`) : `<button class="primary" onclick="nationCard()">나라 카드 만들기</button>`}
     <details class="fold"><summary>자세한 통치 기록 <em>눌러서 펼치기</em></summary>
     <div class="box"><h3>마지막 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
-    <div class="box"><div class="in"><div class="lead">최종 국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">시작 ${fmt(S.gdp0 || GDP0)}조 원 · 변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)${isAll() ? '' : ` · 우리 반 ${R.rank}등 / ${R.total}명`} · 정전 ${S.blackouts}번 · 숙청 ${S.purges}번</div></div></div>
+    <div class="box"><div class="in"><div class="lead">최종 국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">시작 ${fmt(S.gdp0 || GDP0)}조 원 · 변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)${isAll() ? '' : ` · ${roomWord()} ${R.rank}등 / ${R.total}명`} · 정전 ${S.blackouts}번 · 숙청 ${S.purges}번</div></div></div>
     ${runsTable(S.mode === 1)}
     ${gradeBox(S, S.mode === 1)}
     </details>
@@ -4205,9 +4418,10 @@ function futureHTML(s){
 function renderFuture(){
   clearTimers();
   SND.music('end'); SND.sfx('reveal');
-  const locked = S.mode === 1;
+  const locked = false;   // 50년을 끝까지 다스렸으면 초보 독재자도 숨겨진 지표와 미래를 본다
   app.innerHTML = `<div class="screen">
     <span class="badge" style="justify-self:start">미래 엔딩 · 50년 통치 완수</span>
+    ${S.mode === 1 ? '<div class="power up"><b>50년 통치 완수!</b> 초보 독재자에서는 보이지 않던 숨겨진 지표(국민 행복도·중위소득·빈부격차·자연환경·기후)를 지금 공개합니다.</div>' : ''}
     <h1>그리고 50년이 더 흘렀습니다</h1>
     ${locked ? `<div class="land">${futureSVG('f_plain')}</div><div class="power">50년 후 ${esc(S.nation)}의 진짜 모습은 선생님이 숨겨진 지표를 공개할 때 함께 열립니다.</div>` : futureHTML(S)}
     <button class="primary" id="goon">이번 통치의 결과 보기</button></div>`;
@@ -4252,7 +4466,7 @@ function gradeBox(s, hide){
     <div class="lead" style="font-size:13px;margin-top:6px">가장 잘한 점: ${best.n} (${best.v}점) · 가장 아쉬운 점: ${worst.n} (${worst.v}점)</div></div></div>`;
 }
 function recordRun(){
-  if (S.recorded) return; S.recorded = true;
+  if (S.recorded) return; S.recorded = true; clearSave();
   if (!S.over) S.over = 'time';
   S.sessionFalls = SESSION.falls;
   const e = endingOf(S), more = ENDINGS.filter(x => x.id !== e.id && x.id !== 'plain' && x.test(S));
@@ -4302,9 +4516,9 @@ function butterflyBox(s){
   const all = (s.butterfly || []).filter((x, i, a) => a.findIndex(y => key(y) === key(x)) === i);
   const uniq = all.filter(x => !all.some(y => y !== x && key(y).startsWith(key(x) + '>')));
   const seeds = s.log.filter(l => l.type === 'card').length;
-  if (!uniq.length) return `<div class="box"><h3>🦋 나의 나비효과</h3><div class="in lead">이번 통치에서는 돌아온 결재가 없었습니다. 더 오래 다스리면 예전에 찍은 도장이 다른 일이 되어 돌아옵니다.</div></div>`;
+  if (!uniq.length) return `<div class="box"><h3>나의 선택이 일으킨 연쇄</h3><div class="in lead">이번 통치에서는 돌아온 결재가 없었습니다. 더 오래 다스리면 예전에 찍은 도장이 다른 일이 되어 돌아옵니다.</div></div>`;
   const b = uniq.slice().sort((x, y) => y.path.length - x.path.length).slice(0, 3);
-  return `<div class="box"><h3>🦋 나의 작은 결재가 만든 일 <em>연쇄 ${uniq.length}개${uniq.length > 3 ? ' · 긴 것 3개' : ''}</em></h3><div class="in">${b.map(x => `<div class="bfly ${x.good ? 'good' : ''}">
+  return `<div class="box"><h3>나의 선택이 일으킨 연쇄 <em>연쇄 ${uniq.length}개${uniq.length > 3 ? ' · 긴 것 3개' : ''}</em></h3><div class="in">${b.map(x => `<div class="bfly ${x.good ? 'good' : ''}">
       <div class="trail">${x.combo ? '<b>[겹쳐 터진 일]</b> ' : ''}${x.path.map((p, i) => `<span class="tn"><small>${p.year}년</small>「${esc(p.title)}」${miniStamp(p.side || ((s.log.find(l => l.type === 'card' && l.card.title === p.title && yearOf(l.turn) === p.year) || {}).side))}</span>`).join('<i>→</i>')}</div>
       <div class="delta">${chainSum(x.path)}</div></div>`).join('')}
     <div class="lead" style="font-size:13px">결재 ${seeds}번 가운데 ${uniq.reduce((a, x) => a + x.path.length - 1, 0)}번이 몇 년 뒤 다른 안건이 되어 돌아왔습니다.</div></div></div>`;
@@ -4316,18 +4530,20 @@ function runEnd(){
   flushProfile();
   if (left() <= 0) return endGame();
   SND.music('end'); SND.sfx('end');
-  const hide = S.mode === 1;
+  const hide = S.mode === 1 && S.over !== 'done';   // 초보 독재자도 50년을 마치면 모두 공개
+  const toReal = S.mode === 1 && S.over === 'done';
   app.innerHTML = `<div class="screen">
     <span class="badge ${S.over === 'fall' ? 'red' : ''}" style="justify-self:start">${S.over === 'fall' ? '몰락 엔딩' : '미래 엔딩'} · ${S.run}번째 통치 · ${S.over === 'fall' ? `${S.turn}년 만에 실각` : `${S.turn}년 통치 완수`}</span>
     <h1>${esc(S.nation)}, ${S.over === 'fall' ? '지도자가 물러났습니다' : '반세기 통치를 마쳤습니다'}</h1>
     ${hide ? '<div class="power">이 나라의 결말과 새 칭호는 선생님이 숨겨진 지표를 공개할 때 함께 알 수 있습니다.</div>' : endingBox() + drankBox(S) + newTitlesHTML()}
+    ${toReal ? `<div class="box"><h3>숨겨진 국민 생활 지표 <em>초보 독재자에서는 보이지 않던 숫자</em></h3><div class="in">${barsHTML()}</div></div>` : ''}
     ${butterflyBox(S)}
     ${hide ? '' : hsBox(S)}
     <div class="power">남은 수업 시간 <b class="clock">${clock()}</b> · 새 나라를 세워 다시 도전할 수 있습니다.</div>
     ${S.mode === 1 ? `<div class="power ${realUnlocked(S.baseName) ? 'up' : ''}">${realUnlocked(S.baseName) ? '진짜 독재자가 열려 있습니다.' : lockInfo(S.baseName)}</div>` : ''}
-    <button class="primary" id="again" disabled>결말을 읽어 보세요…</button>
+    ${toReal ? '<button class="primary" onclick="goRealNow()">진짜 독재자로 다시 시작하기</button>' : ''}
+    <button class="${toReal ? 'ghost' : 'primary'}" id="again" disabled>결말을 읽어 보세요…</button>
     ${PICK ? '<button class="ghost" onclick="renderHome()">메뉴로</button>' : ''}
-    ${S.mode === 2 ? `<button class="ghost" onclick="nationCard()">이 나라를 투표용 대표 나라로 내기</button>` : ''}
     <details class="fold"><summary>자세한 통치 기록 <em>눌러서 펼치기</em></summary>
     <div class="box"><h3>이번 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
     <div class="box"><div class="in"><div class="lead">국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)</div></div></div>
@@ -4339,6 +4555,13 @@ function runEnd(){
   ag.onclick = () => renderNewRun();
   timers.push(setTimeout(() => { ag.disabled = false; ag.textContent = '새 나라 세우기'; }, 3000));   // 결말을 곱씹도록 3초 동안 잠근다
 }
+// 초보 독재자 50년을 마친 학생: 남은 시간과 상관없이 바로 진짜 독재자로
+function goRealNow(){
+  clearTimers(); PLAYING = false;
+  setBeginner(S.baseName, Math.max(beginnerSec(S.baseName), unlockSec()));
+  if (S.net) clearInterval(S.net.timer);
+  launchMode(2, S.nation);
+}
 function renderNewRun(){
   clearTimers();
   if (left() <= 0) return endGame();
@@ -4349,7 +4572,8 @@ function renderNewRun(){
     <label class="f">나라 이름<input type="text" id="nname" maxlength="8" value="${esc(savedNation())}"></label>
     ${titleSelect(S && S.mode === 1)}
     <div class="power">남은 수업 시간 <b class="clock">${clock()}</b></div>
-    <button class="primary" id="go">출발 순위 주사위 굴리기</button></div>`;
+    <button class="primary" id="go">출발 순위 주사위 굴리기</button>
+    <button class="ghost" onclick="renderHome()">메뉴로</button></div>`;
   tickClock();
   document.getElementById('go').onclick = () => {
     NATION = (document.getElementById('nname').value || '').trim() || NATION;
