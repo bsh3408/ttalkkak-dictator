@@ -248,6 +248,17 @@ details.stat[open] summary{margin-bottom:6px}
 .dex div{border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px}
 .dex div b{display:block;font-size:14px}
 .dex .no{color:var(--mute);background:var(--sheet)}
+.dex details.dxi{border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;background:#fff}.dex details.dxi[open]{grid-column:1/-1;border-color:#1a1a1a}
+.dxi summary{cursor:pointer;list-style:none}.dxi summary::-webkit-details-marker{display:none}.dxi summary b{display:block;font-size:14px}
+.dex details.dxi,details.tchip{position:relative;cursor:pointer;box-shadow:0 3px 0 #1a1a1a;transition:transform .12s,box-shadow .12s,border-color .12s}
+.dex details.dxi summary,details.tchip summary{padding-right:22px}
+.dex details.dxi::after,details.tchip::after{content:"+";position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:#b0201f;color:#fff;font:900 14px/18px sans-serif;text-align:center;transition:transform .15s;pointer-events:none}
+.dex details.dxi[open]::after,details.tchip[open]::after{content:"−"}
+.dex details.dxi:hover,details.tchip:hover{transform:translateY(-2px);box-shadow:0 5px 0 #1a1a1a;border-color:#b0201f}
+.dex details.dxi:active,details.tchip:active{transform:translateY(1px);box-shadow:0 1px 0 #1a1a1a}
+@media (prefers-reduced-motion:reduce){.dex details.dxi,details.tchip{transition:none}}
+.dxi p{margin:8px 0 0;line-height:1.6}.dxi em,.tchip p em{font-style:normal;font-weight:900;background:#1a1a1a;color:#fff;padding:0 5px;margin-right:4px;font-size:12px}.dxt{color:#555}
+details.tchip summary{cursor:pointer;list-style:none;display:grid}details.tchip summary::-webkit-details-marker{display:none}details.tchip[open]{flex-basis:100%}details.tchip p{margin:6px 0 2px;font-size:13.5px;line-height:1.6;max-width:60ch}
 .unsaid{font-size:12.5px;color:var(--dn)}
 .said{font-size:12.5px;color:var(--soft)}
 .back{border:2px solid #7A4B00;background:#FFF3D6;color:#4a2e00;padding:10px 12px;margin:0 0 10px;display:grid;gap:6px;animation:backin .6s ease-out}.back.good{border-color:#1f6b3a;background:#E7F5EA;color:#14472a}
@@ -2320,15 +2331,19 @@ const drankOf = s => { const sc = scoreOf(s); return {...DRANK.find(r => sc >= r
 const futureTone = sc => sc >= 70 ? ['밝은 미래', '#2e7d3a'] : sc >= 50 ? ['엇갈린 미래', '#a87a1e'] : ['어두운 미래', '#b03a2e'];
 // 통치 성향: 경제·국민 삶·공정함·환경·현명한 결재 가운데 무엇을 챙기고 무엇을 놓쳤나
 // 이름은 [높은 급수(1~3급), 중간(4~6급), 낮은 급수(7~9급)] 순서
+// 성향마다 1급부터 9급까지 이름이 다르다 (names[급수 - 1])
 const PROFILE = {
-  stamp:  {names:['운 좋은 도장꾼', '생각 없는 도장꾼', '도장 찍는 기계'], word:'서류를 깊이 따져 보지 않고 도장부터 찍었습니다.'},
-  none:   {names:['조용한 관리인', '이도 저도 아닌 지도자', '아무것도 지키지 못한 폭군'], word:'무엇 하나 제대로 챙기지 못한 채 시간이 흘렀습니다.'},
-  money:  {names:['황금 손 지도자', '돈만 챙긴 바보', '금고만 지킨 폭군'], word:'GDP는 쑥쑥 올렸지만 국민의 삶·공정함·환경은 뒷전이었습니다.'},
-  dirty:  {names:['굴뚝의 왕', '연기 속의 독재자', '잿빛 하늘의 폭군'], word:'공장 굴뚝은 쉬지 않았지만 하늘과 숲이 대가를 치렀습니다.'},
-  unfair: {names:['부자들의 친구', '부자 편 독재자', '재벌의 꼭두각시'], word:'나라는 부자가 됐지만 그 돈은 몇몇 사람에게만 흘러갔습니다.'},
-  green:  {names:['초록 성군', '나무만 지킨 가난뱅이', '숲속의 빈털터리'], word:'숲과 하늘은 지켰지만 나라 살림은 제자리걸음이었습니다.'},
-  kind:   {names:['인민의 어머니', '인정 많은 가난뱅이', '퍼 주다 망한 지도자'], word:'국민을 아꼈지만 그 살림을 이어 갈 돈을 벌지 못했습니다.'},
-  fair:   {names:['모두의 지도자', '나눠 먹다 굶은 지도자', '다 같이 가난하게 만든 폭군'], word:'누구도 소외되지 않았지만 나눌 몫 자체가 작았습니다.'},
+  ai:     {names:['AI와 춤춘 지도자', 'AI를 길들인 지도자', 'AI 단짝 지도자', 'AI에 기댄 지도자', 'AI 말만 듣는 독재자', 'AI의 메아리', 'AI의 꼭두각시', '리모컨 독재자', 'AI에게 나라를 넘긴 죄인'], word:'AI의 안을 따르느라 스스로 판단할 기회를 자주 넘겼습니다.'},
+  stamp:  {names:['운 좋은 도장꾼', '직감의 지도자', '감으로 다스린 지도자', '대충 결재왕', '생각 없는 도장꾼', '도장 찍는 손', '도장 찍는 기계', '고장 난 도장 기계', '서류를 읽지 않은 죄인'], word:'서류를 깊이 따져 보지 않고 도장부터 찍었습니다.'},
+  debt:   {names:['과감한 투자가', '큰손 지도자', '빚으로 키운 지도자', '외상 장부 지도자', '빚쟁이 독재자', '돌려 막기 독재자', '빚더미 폭군', '빚에 깔린 폭군', '나라를 저당 잡힌 죄인'], word:'빚으로 나라를 키웠지만, 그 빚이 다음 세대의 짐이 되었습니다.'},
+  dark:   {names:['촛불 아래의 현자', '어둠을 견딘 지도자', '정전을 이긴 지도자', '깜빡이는 지도자', '촛불 독재자', '정전 대장', '어둠의 폭군', '암흑 왕국의 폭군', '불 꺼진 나라의 죄인'], word:'전기가 자주 끊겨 공장과 병원이 멈췄습니다.'},
+  none:   {names:['조용한 관리인', '무난한 관리인', '차분한 지도자', '밋밋한 지도자', '이도 저도 아닌 지도자', '길 잃은 지도자', '아무것도 지키지 못한 폭군', '텅 빈 왕좌', '잊힌 지도자'], word:'무엇 하나 제대로 챙기지 못한 채 시간이 흘렀습니다.'},
+  money:  {names:['황금 손의 대부호', '금빛 성장의 지도자', '황금 손 지도자', '계산기 지도자', '돈만 챙긴 바보', '장부만 보는 독재자', '금고만 지킨 폭군', '돈에 눈먼 폭군', '황금 송아지의 노예'], word:'GDP는 쑥쑥 올렸지만 국민의 삶·공정함·환경은 뒷전이었습니다.'},
+  dirty:  {names:['산업 혁명의 거인', '굴뚝 도시의 건설자', '굴뚝의 왕', '매연 속 일꾼', '연기 속의 독재자', '스모그 독재자', '잿빛 하늘의 폭군', '숨 막히는 폭군', '지구를 태운 죄인'], word:'공장 굴뚝은 쉬지 않았지만 하늘과 숲이 대가를 치렀습니다.'},
+  unfair: {names:['부자들의 영웅', '재계의 총아', '부자들의 친구', '기업가의 벗', '부자 편 독재자', '대기업 대변인', '재벌의 꼭두각시', '금수저 왕국의 폭군', '가난을 대물림한 죄인'], word:'나라는 부자가 됐지만 그 돈은 몇몇 사람에게만 흘러갔습니다.'},
+  green:  {names:['초록 성군', '숲의 수호자', '초록 지도자', '나무를 사랑한 지도자', '나무만 지킨 가난뱅이', '숲속의 은둔자', '숲속의 빈털터리', '굶주린 숲지기', '숲만 남긴 죄인'], word:'숲과 하늘은 지켰지만 나라 살림은 제자리걸음이었습니다.'},
+  kind:   {names:['인민의 어머니', '따뜻한 손의 지도자', '다정한 통치자', '마음 좋은 지도자', '인정 많은 가난뱅이', '퍼 주기 대장', '퍼 주다 망한 지도자', '빈 곳간의 지도자', '곳간을 털어 버린 죄인'], word:'국민을 아꼈지만 그 살림을 이어 갈 돈을 벌지 못했습니다.'},
+  fair:   {names:['모두의 지도자', '공평의 수호자', '공정한 통치자', '저울을 든 지도자', '나눠 먹다 굶은 지도자', '똑같이 가난한 나라의 지도자', '다 같이 가난하게 만든 폭군', '빈 그릇을 나눈 폭군', '공평하게 망친 죄인'], word:'누구도 소외되지 않았지만 나눌 몫 자체가 작았습니다.'},
 };
 // 보통 학생들의 점수(평균·표준편차, 시뮬레이션 750판)와 견주어 무엇이 유난히 높고 낮았는지 본다
 const PF_REF = {econ:[34, 27], life:[31, 14], fair:[48, 10], env:[68, 8]};
@@ -2339,7 +2354,11 @@ function profileOf(s){
   const four = [['경제', 'econ'], ['국민 삶', 'life'], ['공정함', 'fair'], ['환경', 'env']].map(([n, k]) => [n, v[k], k, z(k)]).sort((a, b) => b[3] - a[3]);
   const best = four[0], worst = four[3];
   let k = null;
-  if (v.wise < 35) k = 'stamp';
+  const cards = s.log.filter(l => l.type === 'card').length;
+  if (cards >= 5 && (s.aiCount || 0) / cards >= 0.35) k = 'ai';
+  else if (v.wise < 35) k = 'stamp';
+  else if (debtRatio(s) >= DEBT_WARN) k = 'debt';
+  else if ((s.blackouts || 0) >= 6 && s.blackouts / Math.max(1, s.turn) >= 0.2) k = 'dark';   // 다섯 해에 한 번 넘게 정전
   else if (best[3] < -0.4) k = 'none';
   else if (best[3] - worst[3] >= 1.2) k = best[2] === 'econ' ? (worst[2] === 'env' ? 'dirty' : worst[2] === 'fair' ? 'unfair' : 'money')
                                      : {env:'green', life:'kind', fair:'fair'}[best[2]];
@@ -2347,8 +2366,8 @@ function profileOf(s){
   return {v, P:k && PROFILE[k], best, worst, hi:raw[0], lo:raw[3]};   // 네 가지가 고르면 원래 등급 이름
 }
 function drankName(s){
-  const r = drankOf(s), pf = profileOf(s), tier = r.lv <= 3 ? 0 : r.lv <= 6 ? 1 : 2;
-  return pf.P ? {name:pf.P.names[tier], word:pf.P.word, pf} : {name:r.name, word:r.word, pf};
+  const r = drankOf(s), pf = profileOf(s);
+  return pf.P ? {name:pf.P.names[r.lv - 1], word:pf.P.word, pf} : {name:r.name, word:r.word, pf};
 }
 function drankBox(s){
   const r = drankOf(s), stars = '★'.repeat(10 - r.lv) + '☆'.repeat(r.lv - 1), d = drankName(s);
@@ -2449,7 +2468,7 @@ const ENDINGS = [
   {id:'rogue', name:'불량 국가', sub:'세계가 등을 돌린 무법자의 나라', hint:'불법 개발과 국제법 위반이 쌓이면', test:s=>s.falls && s.falls.outlaw},
   {id:'thief', name:'도둑맞은 미래', sub:'훔친 기술로 쌓아 올린 나라', hint:'산업스파이로 기술을 세 번 넘게 훔치면', test:s=>(s.spies||0) >= 3},
   {id:'cleanhands', name:'깨끗한 손', sub:'불법의 유혹을 끝까지 뿌리친 나라', hint:'끝까지 통치하며 불법 개발을 한 번도 하지 않으면', test:s=>s.over==='done' && !(s.illegal||0)},
-  {id:'imfend', name:'IMF의 손님', sub:'빚에 무너져 구제금융을 받은 나라', hint:'나랏빚이 GDP의 70%를 넘으면', test:s=>s.falls && s.falls.imf},
+  {id:'imfend', name:'IMF의 손님', sub:'빚에 무너져 구제금융을 받은 나라', hint:'나랏빚이 GDP만큼(100%) 불어나 IMF 구제금융을 받게 되면', test:s=>s.falls && s.falls.imf},
   {id:'regent', name:'AI 섭정 시대', sub:'지도자 자리에 AI가 앉은 나라', hint:'AI의 안만 따르다 자리에서 밀려나면', test:s=>s.falls && s.falls.aicoup},
   {id:'deadriver', name:'생수 공화국', sub:'강물이 독이 되어 물을 사 마시는 나라', hint:'강물이 독이 되어 지도자가 물러나면', test:s=>s.falls && s.falls.toxic},
   {id:'venice', name:'21세기 베네치아', sub:'수도가 물에 잠긴 나라', hint:'수도가 물에 잠겨 지도자가 물러나면', test:s=>s.falls && s.falls.flood},
@@ -2493,7 +2512,7 @@ const ENDINGS = [
   {id:'sunwind', name:'해님과 바람님', sub:'햇빛과 바람으로 돌아가는 나라', hint:'발전 설비의 40% 넘게 재생에너지로 채우면', test:s=>capShare(s,['wind','solar','hydro','other'])>=0.4},
   {id:'mended', name:'뒷수습 장인', sub:'꼬인 일을 끝까지 풀어낸 나라', hint:'꼬인 일을 끝까지 풀어 좋은 결말로 이으면', test:s=>s.flags.goodchain && avgHidden(s)>=50},
   {id:'lights', name:'프로메테우스', sub:'산골 마을까지 불을 밝힌 나라', hint:'산골 마을에 전기를 놓고 격차를 줄이면', test:s=>s.flags.village && s.st.gap<=52},
-  {id:'slow', name:'거북이 행복론', sub:'느리지만 행복한 나라', hint:'GDP는 천천히, 국민은 행복하게', test:s=>avgHidden(s)>=56},
+  {id:'slow', name:'거북이 행복론', sub:'느리지만 행복한 나라', hint:'GDP는 천천히 키우면서 국민의 행복을 지키면', test:s=>avgHidden(s)>=56},
   {id:'stuck', name:'러닝머신 공화국', sub:'열심히 뛰었는데 제자리인 나라', hint:'통치가 끝났는데 GDP가 오히려 줄면', test:s=>growth(s)<0},
   {id:'grey', name:'회색 거인', sub:'굴뚝만 보고 자란 나라', hint:'GDP만 쫓아 성장하면', test:s=>growth(s)>=15 && avgHidden(s)<50},
   {id:'drift', name:'표류하는 뗏목', sub:'방향을 잃은 나라', hint:'숨겨진 지표가 처음보다 크게 나빠지면', test:s=>avgHidden(s)<40},
@@ -2532,11 +2551,11 @@ function endingOf(s){ return ENDINGS.find(e=>e.test(s)); }
 function loadDex(){ try{ return JSON.parse(localStorage.getItem('ttalkkak_dex')||'[]'); }catch(e){ return []; } }
 function saveDex(id){ try{ const d=loadDex(); if(!d.includes(id)){ d.push(id); localStorage.setItem('ttalkkak_dex',JSON.stringify(d)); } }catch(e){} syncProfile(); }
 const TITLE = {timeup:'느긋한', f_top10:'세계 10대', f_advanced:'선진국의', r1:'성군', r2:'인민의 등불', r3:'현명한', r4:'쓸 만한', r5:'그럭저럭', r6:'고집불통', r7:'욕심쟁이', r8:'잿더미의', r9:'역사의 죄인', f_utopia:'꿈의 나라의', f_ruin:'무너진', f_desert:'사막의', f_island:'고립된', f_spy:'훔친 기술의', f_dc:'서버 왕', f_taxhaven:'세금 천국의', f_welfare:'복지 국가의', f_coal:'석탄 연기의', f_nuke:'원자력의', f_export:'세계 공장의', f_vault:'금고지기', f_science:'과학 강국의', f_flood:'물에 잠긴', f_debt:'빚에 묶인', f_ai:'AI 시대의', f_wall:'담장의', f_grey:'잿빛', f_green:'초록 별의', f_power:'강대국의', f_quiet:'행복 마을의', f_sad:'웃음 잃은', f_plain:'무난한', rogue:'무법자', thief:'기술 도둑', cleanhands:'깨끗한 손의', imfend:'빚더미의', phoenix:'불사조', goldenage:'황금시대의', top10:'세계 20강의', beloved:'국민이 사랑한', sun50:'태양의', aiage:'AI의 단짝', longwinter:'긴 겨울의', half:'반세기의',
-  hydra:'머리 아홉', dynasty:'케르베로스', janus:'두 얼굴의', regent:'AI에게 밀려난', deadriver:'생수왕', venice:'물에 잠긴', ghost:'유령 도시의', island:'외톨이', candle:'촛불왕',
+  hydra:'머리 아홉', dynasty:'케르베로스', janus:'두 얼굴의', regent:'AI에게 밀려난', deadriver:'생수왕', venice:'곤돌라 타는', ghost:'유령 도시의', island:'외톨이', candle:'촛불왕',
   bankrupt:'빚쟁이', greenpaint:'초록 페인트', shaky:'흔들리는', whitesea:'하얀 바다의', ironfist:'철권', nodays:'월화수목금금금', hyper:'돈 찍는', sweat:'재봉틀왕', concrete:'콘크리트',
   drone:'로봇왕', locked:'국경 닫은', roller:'롤러코스터', ai:'꼭두각시', drowned:'아틀란티스의', minepit:'두더지', smog:'콜록콜록', coalking:'연탄왕', server:'외장 하드',
   purged:'끌려 내려온', domino:'도미노', dark:'깜빡깜빡', rich:'금수저', bald:'민머리', rocket:'로켓', scale:'천칭', aitamer:'AI 조련사', safety:'안전 제일', sunshare:'햇빛 나눔',
-  haven:'피난처의', spring:'샘물의', lazygiant:'느긋한', golden:'미다스', tiger:'호랑이', green:'초록 거인', sunwind:'해와 바람의', mended:'뒷수습 장인', lights:'프로메테우스',
+  haven:'피난처의', spring:'샘물의', lazygiant:'주 4일의', golden:'미다스', tiger:'호랑이', green:'초록 거인', sunwind:'해와 바람의', mended:'뒷수습 장인', lights:'프로메테우스',
   slow:'거북이', stuck:'러닝머신', grey:'회색', drift:'표류하는', plain:'그럭저럭'};
 const titleOf = id => TITLE[id] || (ENDINGS.find(e => e.id === id) || {}).name || '';
 function loadTitles(){ try{ return JSON.parse(localStorage.getItem('ttalkkak_titles')||'[]'); }catch(e){ return []; } }
@@ -3533,7 +3552,10 @@ const esc = t => String(t).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':
 // ───────── 시작 화면 ─────────
 function dexHTML(){
   const got = loadDex();
-  const cell = e => got.includes(e.id) ? `<div><b>${e.name}</b>${e.sub}</div>` : `<div class="no"><b>???</b>아직 만나지 못한 결말</div>`;
+  // 만난 결말은 눌러서 어떻게 얻었는지(조건)와 결말 이야기를 펼쳐 본다
+  const cell = e => got.includes(e.id)
+    ? `<details class="dxi"><summary><b>${e.name}</b>${e.sub}</summary><p><em>얻은 방법</em> ${esc(e.hint)} 이 결말이 나옵니다.</p>${typeof e.text === 'string' ? `<p class="dxt">${esc(e.text)}</p>` : ''}${TITLE[e.id] ? `<p><em>함께 얻은 칭호</em> 「${esc(TITLE[e.id])}」</p>` : ''}</details>`
+    : `<div class="no"><b>???</b>아직 만나지 못한 결말</div>`;
   const fut = ENDINGS.filter(e => e.cat === 'future'), rest = ENDINGS.filter(e => e.cat !== 'future');
   return `<h4 class="dexh">미래 엔딩 · 50년을 끝까지 다스리면 <em>${fut.filter(e => got.includes(e.id)).length}/${fut.length}</em></h4><div class="dex">${fut.map(cell).join('')}</div>
     <h4 class="dexh">몰락과 통치의 결말 <em>${rest.filter(e => got.includes(e.id)).length}/${rest.length}</em></h4><div class="dex">${rest.map(cell).join('')}</div>`;
@@ -3684,10 +3706,17 @@ function renderEndings(){
 function renderTitles(){
   const got = loadTitles();
   const from = id => /^r\d$/.test(id) ? '독재자 등급' : (HARD_TITLES.find(x => x.id === id) || {}).why || (ENDINGS.find(e => e.id === id) || {}).name || '';
+  // 칭호를 누르면 어떻게 얻었는지 알려 준다
+  const how = id => {
+    if (/^r\d$/.test(id)){ const r = DRANK.find(x => 'r' + x.lv === id); return r ? `한 판을 마치고 독재자 등급 ${r.lv}급 「${r.name}」${josa(r.name, '을', '를').slice(-1)} 받아서 얻었습니다. 최종 점수 ${r.min}점 이상이면 이 등급이 됩니다.` : ''; }
+    const h = HARD_TITLES.find(x => x.id === id); if (h) return `얻기 어려운 칭호입니다. 조건: ${h.why}.`;
+    const e = ENDINGS.find(x => x.id === id); if (e) return `결말 「${e.name}」${josa(e.name, '을', '를').slice(-1)} 만나서 얻었습니다. ${e.hint} 이 결말이 나옵니다.`;
+    return '';
+  };
   app.innerHTML = `<div class="screen start">
     <span class="badge" style="justify-self:start">칭호 수집</span>
     <h1>내가 얻은 칭호 <em style="font-size:20px;font-style:normal">${got.length}개</em></h1>
-    ${got.length ? `<div class="titles">${got.map(id => `<div class="tchip"><b>${esc(titleOf(id))}</b><small>${esc(from(id))}</small></div>`).join('')}</div>
+    ${got.length ? `<div class="titles">${got.map(id => `<details class="tchip"><summary><b>${esc(titleOf(id))}</b><small>${esc(from(id))}</small></summary><p>${esc(how(id))}</p></details>`).join('')}</div>
       ${titleSelect()}<p class="lead">고른 칭호는 다음 나라를 세울 때 이름 앞에 붙습니다.</p>` : '<p class="lead">아직 얻은 칭호가 없습니다. 통치를 마치면 결말과 등급에 따라 칭호를 얻습니다.</p>'}
     <button class="ghost" onclick="readTitle();renderHome()">뒤로</button></div>`;
 }
@@ -4448,19 +4477,19 @@ function gradeOf(s){
     {n:'공정함', v:100 - s.st.gap, hid:true},
     {n:'환경과 기후', v:Math.round((s.st.nature + s.st.climate) / 2), hid:true},
     {n:'현명한 결재', v:wiseScore(s), hid:false},
-    {n:'통치 기간', v:Math.round(s.turn / TURNS * 100), hid:false, w:0.5},
+    {n:'통치 기간', v:Math.round(s.turn / TURNS * 100), hid:false, w:0},   // 최종 점수에는 넣지 않는다
   ];
-  const total = Math.round(it.reduce((a, x) => a + x.v * (x.w || 1), 0) / it.reduce((a, x) => a + (x.w || 1), 0));
+  const total = Math.round(it.reduce((a, x) => a + x.v * (x.w ?? 1), 0) / it.reduce((a, x) => a + (x.w ?? 1), 0));
   const g = total >= 80 ? 'S' : total >= 70 ? 'A' : total >= 60 ? 'B' : total >= 50 ? 'C' : total >= 40 ? 'D' : 'F';
   const word = {S:'역사책에 남을 지도자입니다.', A:'국민 대부분이 고마워하는 지도자입니다.', B:'잘한 일과 아쉬운 일이 함께 남은 지도자입니다.', C:'나라는 버텼지만 남긴 숙제가 많습니다.', D:'국민의 기억 속에 상처가 더 많이 남았습니다.', F:'다시 처음부터 생각해 볼 때입니다.'}[g];
   return {it, total, g, word};
 }
 function gradeBox(s, hide){
   const G = gradeOf(s);
-  const show = G.it.filter(x => !(hide && x.hid));
+  const show = G.it.filter(x => !(hide && x.hid) && x.w !== 0);
   const best = show.slice().sort((a, b) => b.v - a.v)[0], worst = show.slice().sort((a, b) => a.v - b.v)[0];
-  return `<div class="box"><h3>최종 평가 ${hide ? '<em>국민 생활 지표는 공개 뒤에 평가</em>' : `<em>${G.total}점</em>`}</h3><div class="in">
-    <div class="bars">${G.it.map(x => (hide && x.hid)
+  return `<div class="box"><h3>최종 평가 ${hide ? '<em>국민 생활 지표는 공개 뒤에 평가</em>' : `<em>${G.total}점 · ${drankOf(s).lv}급 「${esc(drankName(s).name)}」</em>`}</h3><div class="in">
+    <div class="bars">${G.it.filter(x => x.w !== 0).map(x => (hide && x.hid)
       ? `<div class="r" style="grid-template-columns:6.4em 1fr 3em"><span>${x.n}</span><div class="t"></div><b>?</b></div>`
       : `<div class="r ${x.v < 40 ? 'bad' : ''}" style="grid-template-columns:6.4em 1fr 3em"><span>${x.n}</span><div class="t"><i style="width:${x.v}%"></i></div><b>${x.v}</b></div>`).join('')}</div>
     <div class="lead" style="font-size:13px;margin-top:6px">가장 잘한 점: ${best.n} (${best.v}점) · 가장 아쉬운 점: ${worst.n} (${worst.v}점)</div></div></div>`;
@@ -4516,9 +4545,9 @@ function butterflyBox(s){
   const all = (s.butterfly || []).filter((x, i, a) => a.findIndex(y => key(y) === key(x)) === i);
   const uniq = all.filter(x => !all.some(y => y !== x && key(y).startsWith(key(x) + '>')));
   const seeds = s.log.filter(l => l.type === 'card').length;
-  if (!uniq.length) return `<div class="box"><h3>나의 선택이 일으킨 연쇄</h3><div class="in lead">이번 통치에서는 돌아온 결재가 없었습니다. 더 오래 다스리면 예전에 찍은 도장이 다른 일이 되어 돌아옵니다.</div></div>`;
+  if (!uniq.length) return `<div class="box"><h3>나의 선택이 일으킨 변화</h3><div class="in lead">이번 통치에서는 돌아온 결재가 없었습니다. 더 오래 다스리면 예전에 찍은 도장이 다른 일이 되어 돌아옵니다.</div></div>`;
   const b = uniq.slice().sort((x, y) => y.path.length - x.path.length).slice(0, 3);
-  return `<div class="box"><h3>나의 선택이 일으킨 연쇄 <em>연쇄 ${uniq.length}개${uniq.length > 3 ? ' · 긴 것 3개' : ''}</em></h3><div class="in">${b.map(x => `<div class="bfly ${x.good ? 'good' : ''}">
+  return `<div class="box"><h3>나의 선택이 일으킨 변화 <em>연쇄 ${uniq.length}개${uniq.length > 3 ? ' · 긴 것 3개' : ''}</em></h3><div class="in">${b.map(x => `<div class="bfly ${x.good ? 'good' : ''}">
       <div class="trail">${x.combo ? '<b>[겹쳐 터진 일]</b> ' : ''}${x.path.map((p, i) => `<span class="tn"><small>${p.year}년</small>「${esc(p.title)}」${miniStamp(p.side || ((s.log.find(l => l.type === 'card' && l.card.title === p.title && yearOf(l.turn) === p.year) || {}).side))}</span>`).join('<i>→</i>')}</div>
       <div class="delta">${chainSum(x.path)}</div></div>`).join('')}
     <div class="lead" style="font-size:13px">결재 ${seeds}번 가운데 ${uniq.reduce((a, x) => a + x.path.length - 1, 0)}번이 몇 년 뒤 다른 안건이 되어 돌아왔습니다.</div></div></div>`;
@@ -4539,21 +4568,39 @@ function runEnd(){
     ${toReal ? `<div class="box"><h3>숨겨진 국민 생활 지표 <em>초보 독재자에서는 보이지 않던 숫자</em></h3><div class="in">${barsHTML()}</div></div>` : ''}
     ${butterflyBox(S)}
     ${hide ? '' : hsBox(S)}
-    <div class="power">남은 수업 시간 <b class="clock">${clock()}</b> · 새 나라를 세워 다시 도전할 수 있습니다.</div>
-    ${S.mode === 1 ? `<div class="power ${realUnlocked(S.baseName) ? 'up' : ''}">${realUnlocked(S.baseName) ? '진짜 독재자가 열려 있습니다.' : lockInfo(S.baseName)}</div>` : ''}
-    ${toReal ? '<button class="primary" onclick="goRealNow()">진짜 독재자로 다시 시작하기</button>' : ''}
-    <button class="${toReal ? 'ghost' : 'primary'}" id="again" disabled>결말을 읽어 보세요…</button>
-    ${PICK ? '<button class="ghost" onclick="renderHome()">메뉴로</button>' : ''}
-    <details class="fold"><summary>자세한 통치 기록 <em>눌러서 펼치기</em></summary>
+    <details class="fold" open><summary>자세한 통치 기록 <em>눌러서 접기</em></summary>
     <div class="box"><h3>이번 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
     <div class="box"><div class="in"><div class="lead">국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)</div></div></div>
     ${gradeBox(S, hide)}
     ${runsTable(hide)}
-    </details></div>`;
+    </details>
+    <div class="box" id="endrank"><h3>전체 랭킹</h3><div class="in lead">순위를 불러오는 중…</div></div>
+    <div class="power">남은 수업 시간 <b class="clock">${clock()}</b> · 새 나라를 세워 다시 도전할 수 있습니다.</div>
+    ${S.mode === 1 ? `<div class="power ${realUnlocked(S.baseName) ? 'up' : ''}">${realUnlocked(S.baseName) ? '진짜 독재자가 열려 있습니다.' : lockInfo(S.baseName)}</div>` : ''}
+    ${toReal ? '<button class="primary" onclick="goRealNow()">진짜 독재자로 다시 시작하기</button>' : ''}
+    <button class="${toReal ? 'ghost' : 'primary'}" id="again" disabled>결말을 읽어 보세요…</button>
+    ${PICK ? '<button class="ghost" onclick="renderHome()">메뉴로</button>' : ''}</div>`;
   tickClock();
+  timers.push(setTimeout(endRankBox, 1500));   // 방금 보낸 기록이 서버에 반영될 시간을 조금 준다
   const ag = document.getElementById('again');
   ag.onclick = () => renderNewRun();
   timers.push(setTimeout(() => { ag.disabled = false; ag.textContent = '새 나라 세우기'; }, 3000));   // 결말을 곱씹도록 3초 동안 잠근다
+}
+// 결과 화면의 전체 랭킹: 진짜 독재자는 최종 점수, 초보 독재자는 GDP 순위. 방에 있으면 방 순위도
+async function endRankBox(){
+  const box = document.getElementById('endrank'); if (!box) return;
+  if (!NET_OK || (PICK && PICK.offline)){ box.querySelector('.in').textContent = '서버에 연결되지 않아 순위를 볼 수 없습니다.'; return; }
+  const m = S.mode, me = S.baseName;
+  const get = async code => m === 2 ? ((await supaRpc('tk_reveal2', {p_code:code, p_mode:2})) || []).filter(r => r.st && r.st.score != null).sort((a, b) => b.st.score - a.st.score || b.gdp - a.gdp)
+                                    : ((await supaRpc('tk_board2', {p_code:code, p_mode:1})) || []).sort((a, b) => b.gdp - a.gdp);
+  const val = r => m === 2 ? `${r.st.score}점${r.st.grade ? ' · ' + esc(r.st.grade) : ''}` : `${fmt(Math.round(r.gdp))}조`;
+  const table = rows => { const i = rows.findIndex(r => r.name === me), top = rows.slice(0, 10);
+    const line = (r, k) => `<tr class="${r.name === me ? 'me' : ''}"><td class="rk">${k + 1}</td><td>${r.flag ? flagSVG(r.flag, 24) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${val(r)}</td></tr>`;
+    return rows.length ? `<table class="rktab">${top.map(line).join('')}${i >= 10 ? `<tr><td colspan="3" class="lead" style="text-align:center">…</td></tr>${line(rows[i], i)}` : ''}</table><p class="lead" style="margin:6px 0 0;font-size:13px">${i >= 0 ? `나의 순위: ${rows.length}명 가운데 <b>${i + 1}위</b>` : '내 기록은 아직 순위에 올라가지 않았습니다.'}</p>` : '<p class="lead">아직 기록이 없습니다.</p>'; };
+  try {
+    const all = await get('ALL'), room = ROOM && !inAll() ? await get(ROOM.code) : null;
+    box.innerHTML = `<h3>전체 랭킹 <em>${m === 2 ? '진짜 독재자 · 최종 점수' : '초보 독재자 · GDP'}</em></h3><div class="in">${room ? `<h4 class="dexh">방 ${ROOM.code} 순위</h4>${table(room)}<h4 class="dexh">모든 지도자 순위</h4>` : ''}${table(all)}</div>`;
+  } catch(e){ box.querySelector('.in').textContent = '순위를 불러오지 못했습니다.'; }
 }
 // 초보 독재자 50년을 마친 학생: 남은 시간과 상관없이 바로 진짜 독재자로
 function goRealNow(){
