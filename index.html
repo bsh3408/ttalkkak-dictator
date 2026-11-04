@@ -2690,7 +2690,7 @@ function newGame(mode, name, motto){
         cap:{coal:35,lng:30,hydro:22,nuke:0,wind:0,solar:0,other:0}, demand:72, ess:0, grid:0, blackouts:0,
         decks:{1:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===1))), 2:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===2))), 3:dlBoost(shuffle(BASE.filter(c=>eraCard(c)===3)))}, era:1, purges:0, falls:{}, aiStreak:0, boMark:0, gen:1, baseName:name||'이름 없는', medals:0, lastPlan:null, coupPending:null, nation:NATION, rankMove:null, gdpHist:[GDP0], slump:0, slumpNow:false, aiAsked:0, aiRefused:0, advice:(TURNS === 50 ? 7 : 3), adviceUsed:0, adviceText:null, noAi:0, maxNoAi:0, everSlump:false, plansOk:0, pending:[], flags:{}, plants:{}, events:shuffle(EVENTS.slice()),
         built:['hut','hut','hut','hut','town'].concat(Array(18).fill('tree')),
-        net:null, mates:[], log:[], used:{}, cause:null, maxChain:1, dominos:0, aiCount:0, ex:GDP0*0.30, im:GDP0*0.32, assets:GDP0*0.16*(1 + quizTier(SESSION && SESSION.right).asset / 100), debt:GDP0*0.35, taxRate:0.15, taxRev:GDP0*0.15, start:SESSION.start, run:SESSION.runs.length + 1, sessionFalls:SESSION.falls, card:null, event:null, lastAdd:[], bots:makeBots() };
+        net:null, mates:[], log:[], used:{}, cause:null, maxChain:1, dominos:0, aiCount:0, ex:GDP0*0.30, im:GDP0*0.32, assets:GDP0*0.16, debt:GDP0*0.35, taxRate:0.15, taxRev:GDP0*0.15, start:SESSION.start, run:SESSION.runs.length + 1, sessionFalls:SESSION.falls, card:null, event:null, lastAdd:[], bots:makeBots() };
   if (ROOM && NET_OK){ if (SESSION.net){ S.net = SESSION.net; S.mates = SESSION.mates || []; S.bots = []; } else netStart(); }
   nextCard();
 }
@@ -3929,7 +3929,7 @@ function renderQuiz(m, name){
   app.innerHTML = `<div class="screen">
     <span class="badge" style="justify-self:start">독재자 능력 테스트</span>
     <h1>지도자 동지께 편지가 도착했습니다</h1>
-    <p class="lead">편지를 눌러 열고 문제를 풀어 보세요. 많이 맞힐수록 더 높은 순위에서, 더 많은 나라 자산을 가지고 시작합니다.</p>
+    <p class="lead">편지를 눌러 열고 문제를 풀어 보세요. 많이 맞힐수록 더 높은 순위에서 시작합니다.</p>
     <details class="fold"><summary>맞힌 개수별 보상 보기</summary>${tierTable(-1)}</details>
     <div class="letters" id="letters">${qs.map((Q, k) => `<button class="env" data-k="${k}" style="animation-delay:${k * .35}s"><span class="flap"></span><span class="seal">${k + 1}</span><small>${LETTER_FROM[k]}</small></button>`).join('')}</div>
     <div class="lead" id="lprog">읽은 편지 0 / ${LETTERS}</div>
@@ -3974,17 +3974,17 @@ function renderQuiz(m, name){
   };
   document.querySelectorAll('.env').forEach(e => e.onclick = () => openLetter(+e.dataset.k));
 }
-// 독재자 능력 테스트 보상: 많이 맞힐수록 출발 순위 구간이 높아지고 나라 자산이 늘어난다
+// 독재자 능력 테스트 보상: 많이 맞힐수록 출발 순위 구간이 높아진다
 const QUIZ_TIER = [
-  {lo:80, hi:80, asset:0},    // 0개: 80위 고정
-  {lo:74, hi:79, asset:5},    // 1개
-  {lo:69, hi:73, asset:10},   // 2개
-  {lo:63, hi:68, asset:15},   // 3개
-  {lo:56, hi:62, asset:20},   // 4개
-  {lo:50, hi:50, asset:30},   // 5개: 50위 고정 + 칭호 「척척박사」
+  {lo:80, hi:80},   // 0개: 80위 고정
+  {lo:74, hi:79},   // 1개
+  {lo:69, hi:73},   // 2개
+  {lo:63, hi:68},   // 3개
+  {lo:56, hi:62},   // 4개
+  {lo:50, hi:50},   // 5개: 50위 고정 + 칭호 「척척박사」
 ];
 const quizTier = right => QUIZ_TIER[Math.max(0, Math.min(5, right || 0))];
-const tierTable = right => `<table class="qtier">${QUIZ_TIER.map((t, k) => `<tr class="${k === right ? 'me' : ''}"><td>${k}개</td><td>${t.lo === t.hi ? `${t.lo}위 고정` : `${t.lo}~${t.hi}위`}</td><td>${t.asset ? `나라 자산 +${t.asset}%` : '–'}${k === 5 ? ' · 칭호 「척척박사」' : ''}</td></tr>`).join('')}</table>`;
+const tierTable = right => `<table class="qtier">${QUIZ_TIER.map((t, k) => `<tr class="${k === right ? 'me' : ''}"><td>${k}개</td><td>${t.lo === t.hi ? `${t.lo}위 고정` : `${t.lo}~${t.hi}위`}</td><td>${k === 5 ? '칭호 「척척박사」' : '–'}</td></tr>`).join('')}</table>`;
 function renderDice(m, name, right){
   SESSION.right = right;
   const T = quizTier(right), n = T.lo === T.hi ? 1 : right;
@@ -3994,7 +3994,7 @@ function renderDice(m, name, right){
   app.innerHTML = `<div class="screen">
     <span class="badge" style="justify-self:start">출발 순위 주사위</span>
     <h2>맞힌 문제 ${right}개 → ${T.lo === T.hi ? `세계 ${T.lo}위에서 출발` : `세계 ${T.lo}~${T.hi}위 주사위 ${n}번`}</h2>
-    <p class="lead">많이 맞힐수록 더 높은 순위에서, 더 많은 나라 자산을 가지고 시작합니다.${right >= 5 ? ' <b>만점! 칭호 「척척박사」를 얻었습니다.</b>' : ''}</p>
+    <p class="lead">많이 맞힐수록 더 높은 순위에서 시작합니다.${right >= 5 ? ' <b>만점! 칭호 「척척박사」를 얻었습니다.</b>' : ''}</p>
     ${tierTable(right)}
     <div class="dice" id="dice"></div>
     <div id="dres"></div>
@@ -4007,7 +4007,7 @@ function renderDice(m, name, right){
       if (!document.getElementById('dres')) return;
       GDP0 = gdpForRank(best); START_RANK = best;
       SND.sfx('coin');
-      document.getElementById('dres').innerHTML = `<div class="result"><b>세계 ${START_RANK}위로 통치를 시작합니다.</b><p style="margin:4px 0 10px">${esc(NATION)}의 국가소득(GDP)은 ${fmt(Math.round(GDP0))}조 원, 나라 자산은 ${fmt(Math.round(GDP0 * 0.16 * (1 + quizTier(SESSION.right).asset / 100)))}조 원${quizTier(SESSION.right).asset ? `(능력 테스트 보상 +${quizTier(SESSION.right).asset}%)` : ''}입니다. 해마다 수출 ${fmt(Math.round(GDP0 * 0.30))}조 원어치를 팔고 수입 ${fmt(Math.round(GDP0 * 0.32))}조 원어치를 사 옵니다. 바로 위는 ${WD[START_RANK - 2].name}, 바로 아래는 ${WD[START_RANK - 1].name}입니다.</p><button class="primary" id="dgo">통치 시작</button></div>`;
+      document.getElementById('dres').innerHTML = `<div class="result"><b>세계 ${START_RANK}위로 통치를 시작합니다.</b><p style="margin:4px 0 10px">${esc(NATION)}의 국가소득(GDP)은 ${fmt(Math.round(GDP0))}조 원, 나라 자산은 ${fmt(Math.round(GDP0 * 0.16))}조 원입니다. 해마다 수출 ${fmt(Math.round(GDP0 * 0.30))}조 원어치를 팔고 수입 ${fmt(Math.round(GDP0 * 0.32))}조 원어치를 사 옵니다. 바로 위는 ${WD[START_RANK - 2].name}, 바로 아래는 ${WD[START_RANK - 1].name}입니다.</p><button class="primary" id="dgo">통치 시작</button></div>`;
       document.getElementById('dgo').onclick = () => launch(m, name);
     }, 350));
   }, 450 * k + 200)));
