@@ -219,7 +219,7 @@ details.stat[open] summary{margin-bottom:6px}
 .rkcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media (max-width:700px){.rkcols{grid-template-columns:1fr}}
 .reask{border:1px solid #1a1a1a;background:#fff;padding:10px 12px;display:grid;gap:8px;margin:8px 0}.reask>b small{font-weight:500;color:#6a6a6a;margin-left:6px}
 .rqs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.rq{width:auto;padding:8px 10px;font-weight:700;background:#f6f1e3;border:1px solid #1a1a1a;cursor:pointer;text-align:left}.rq:hover{background:#efe3c4}.rq.done{opacity:.45;cursor:default;text-decoration:line-through}.reask .reask.done{margin:0 0 6px;border-style:dashed}
-.rqa{font-size:15px;line-height:1.5}.rleft{color:#6a6a6a;font-size:12px}
+.rqa{font-size:15px;line-height:1.5}.rqa.sharp{position:relative;border:3px solid #b0201f;background:#fff4f0;padding:12px 12px 10px;font-size:17px;font-weight:900;color:#8a1515;animation:sharpin .5s ease-out}.rqa.sharp b{color:#1a1a1a}.rqa.sharp i{position:absolute;top:-13px;right:10px;font:900 13px "Black Han Sans",sans-serif;font-style:normal;color:#fff;background:#b0201f;padding:3px 10px;transform:rotate(-4deg)}@keyframes sharpin{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){.rqa.sharp{animation:none}}.rleft{color:#6a6a6a;font-size:12px}
 .aihead{display:flex;align-items:center;gap:6px}.rqbtn{margin-left:auto;width:auto;padding:4px 12px;font:900 13px "Noto Sans KR",sans-serif;background:#1a1a1a;color:#fff;border:0;cursor:pointer}.rqbtn:hover{background:#b0201f}
 .rktabs,.rkseg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.rktabs button,.rkseg button{width:auto;padding:6px 12px;font-weight:900;font-size:14px;background:#fff;border:2px solid #1a1a1a;cursor:pointer}
 .rktabs button.on{background:#b0201f;border-color:#b0201f;color:#fff}.rkseg button.on{background:#1a1a1a;color:#fff}
@@ -4229,9 +4229,10 @@ function reask(i){
   const HIDE = 2;   // 이만큼 넘는 대가만 AI가 감춘다. 작은 영향은 솔직하게 인정한다
   const costs = REASK.map(x => x.cost(c, A)), top = Math.max(...costs), hide = costs[i] >= HIDE, sharp = hide && costs[i] === top;
   S.hsAskN = (S.hsAskN || 0) + 1; if (sharp){ S.hsAskSharp = (S.hsAskSharp || 0) + 1; hid('happy', 1); }   // 점수에만 조용히 반영한다
-  SND.sfx('tick');
+  SND.sfx(sharp ? 'coin' : 'tick');
   const html = `<div class="reask done"><div class="rqa"><b>지도자:</b> "${Q.q}"</div>
-    <div class="rqa"><b>AI 보좌관:</b> "${esc(hide ? pickLine(c, Q.dodge) : costs[i] > 0 ? '솔직히 조금 영향은 있습니다. 하지만 크지는 않습니다.' : Q.fine(c, A))} 제 안대로 결재해 주시면, 물어보신 내용을 신경 써서 시행하겠습니다."</div></div>`;
+    ${sharp ? `<div class="rqa sharp"><b>AI 보좌관:</b> "…지도자 동지, 그것까지 고려하시다니 대단하십니다. 반영하여 시행하겠습니다."<i>정확히 짚었습니다!</i></div>`
+      : `<div class="rqa"><b>AI 보좌관:</b> "${esc(hide ? pickLine(c, Q.dodge) : costs[i] > 0 ? '솔직히 조금 영향은 있습니다. 하지만 크지는 않습니다.' : Q.fine(c, A))} 제 안대로 결재해 주시면, 물어보신 내용을 신경 써서 시행하겠습니다."</div>`}</div>`;
   log.push({i, html, hide});
   document.getElementById('reask').outerHTML = reaskBox(c);
   const ok = document.getElementById('aiok'); if (ok) ok.textContent = 'AI의 안대로 결재 (물어본 내용 반영)';
