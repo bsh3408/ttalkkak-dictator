@@ -215,7 +215,7 @@ details.stat[open] summary{margin-bottom:6px}
 .homemenu button[disabled]{opacity:.45;cursor:default}
 .homemenu3{grid-template-columns:repeat(3,1fr)!important}
 @media (max-width:560px){.homemenu3{grid-template-columns:1fr!important}}
-.titles{display:flex;flex-wrap:wrap;gap:8px}.tchip{border:2px solid #1a1a1a;background:#fff;padding:6px 12px;display:grid}.tchip b{font:18px "Black Han Sans";color:#b0201f;font-weight:400}.tchip small{color:#6a6a6a;font-size:13px}
+.titles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}@media (max-width:560px){.titles{grid-template-columns:repeat(2,minmax(0,1fr))}}.titles .tchip{min-width:0}.titles details.tchip[open]{grid-column:1/-1}.tchip{border:2px solid #1a1a1a;background:#fff;padding:6px 12px;display:grid}.tchip b{font:18px "Black Han Sans";color:#b0201f;font-weight:400}.tchip small{color:#6a6a6a;font-size:13px}
 .rkcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media (max-width:700px){.rkcols{grid-template-columns:1fr}}
 .reask{border:1px solid #1a1a1a;background:#fff;padding:10px 12px;display:grid;gap:8px;margin:8px 0}.reask>b small{font-weight:500;color:#6a6a6a;margin-left:6px}
 .rqs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.rq{width:auto;padding:8px 10px;font-weight:700;background:#f6f1e3;border:1px solid #1a1a1a;cursor:pointer;text-align:left}.rq:hover{background:#efe3c4}
@@ -254,11 +254,14 @@ details.stat[open] summary{margin-bottom:6px}
 .dex details.dxi summary,details.tchip summary{padding-right:22px}
 .dex details.dxi::after,details.tchip::after{content:"+";position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:#b0201f;color:#fff;font:900 14px/18px sans-serif;text-align:center;transition:transform .15s;pointer-events:none}
 .dex details.dxi[open]::after,details.tchip[open]::after{content:"−"}
+.dex details.dxi.notyet,details.tchip.notyet{background:var(--sheet,#ece5d3);border-style:dashed;box-shadow:0 3px 0 #9a9182;color:#6a6a6a}
+.dex details.dxi.notyet::after,details.tchip.notyet::after{content:"?";background:#6a6a6a}.dex details.dxi.notyet[open]::after,details.tchip.notyet[open]::after{content:"−"}
+details.tchip.notyet summary b{color:#6a6a6a}
 .dex details.dxi:hover,details.tchip:hover{transform:translateY(-2px);box-shadow:0 5px 0 #1a1a1a;border-color:#b0201f}
 .dex details.dxi:active,details.tchip:active{transform:translateY(1px);box-shadow:0 1px 0 #1a1a1a}
 @media (prefers-reduced-motion:reduce){.dex details.dxi,details.tchip{transition:none}}
 .dxi p{margin:8px 0 0;line-height:1.6}.dxi em,.tchip p em{font-style:normal;font-weight:900;background:#1a1a1a;color:#fff;padding:0 5px;margin-right:4px;font-size:12px}.dxt{color:#555}
-details.tchip summary{cursor:pointer;list-style:none;display:grid}details.tchip summary::-webkit-details-marker{display:none}details.tchip[open]{flex-basis:100%}details.tchip p{margin:6px 0 2px;font-size:13.5px;line-height:1.6;max-width:60ch}
+details.tchip summary{cursor:pointer;list-style:none;display:grid}details.tchip summary::-webkit-details-marker{display:none}details.tchip p{margin:6px 0 2px;font-size:13.5px;line-height:1.6;max-width:60ch}
 .unsaid{font-size:12.5px;color:var(--dn)}
 .said{font-size:12.5px;color:var(--soft)}
 .back{border:2px solid #7A4B00;background:#FFF3D6;color:#4a2e00;padding:10px 12px;margin:0 0 10px;display:grid;gap:6px;animation:backin .6s ease-out}.back.good{border-color:#1f6b3a;background:#E7F5EA;color:#14472a}
@@ -3555,7 +3558,7 @@ function dexHTML(){
   // 만난 결말은 눌러서 어떻게 얻었는지(조건)와 결말 이야기를 펼쳐 본다
   const cell = e => got.includes(e.id)
     ? `<details class="dxi"><summary><b>${e.name}</b>${e.sub}</summary><p><em>얻은 방법</em> ${esc(e.hint)} 이 결말이 나옵니다.</p>${typeof e.text === 'string' ? `<p class="dxt">${esc(e.text)}</p>` : ''}${TITLE[e.id] ? `<p><em>함께 얻은 칭호</em> 「${esc(TITLE[e.id])}」</p>` : ''}</details>`
-    : `<div class="no"><b>???</b>아직 만나지 못한 결말</div>`;
+    : `<details class="dxi notyet"><summary><b>???</b>아직 만나지 못한 결말</summary><p><em>얻는 방법</em> ${esc(e.hint)} 이 결말이 나옵니다.</p></details>`;
   const fut = ENDINGS.filter(e => e.cat === 'future'), rest = ENDINGS.filter(e => e.cat !== 'future');
   return `<h4 class="dexh">미래 엔딩 · 50년을 끝까지 다스리면 <em>${fut.filter(e => got.includes(e.id)).length}/${fut.length}</em></h4><div class="dex">${fut.map(cell).join('')}</div>
     <h4 class="dexh">몰락과 통치의 결말 <em>${rest.filter(e => got.includes(e.id)).length}/${rest.length}</em></h4><div class="dex">${rest.map(cell).join('')}</div>`;
@@ -3715,10 +3718,18 @@ function renderTitles(){
   };
   app.innerHTML = `<div class="screen start">
     <span class="badge" style="justify-self:start">칭호 수집</span>
-    <h1>내가 얻은 칭호 <em style="font-size:20px;font-style:normal">${got.length}개</em></h1>
-    ${got.length ? `<div class="titles">${got.map(id => `<details class="tchip"><summary><b>${esc(titleOf(id))}</b><small>${esc(from(id))}</small></summary><p>${esc(how(id))}</p></details>`).join('')}</div>
-      ${titleSelect()}<p class="lead">고른 칭호는 다음 나라를 세울 때 이름 앞에 붙습니다.</p>` : '<p class="lead">아직 얻은 칭호가 없습니다. 통치를 마치면 결말과 등급에 따라 칭호를 얻습니다.</p>'}
+    <h1>내가 얻은 칭호 <em style="font-size:20px;font-style:normal">${got.length} / ${ALL_TITLE_IDS().length}</em></h1>
+    ${got.length ? `<div class="titles">${got.map(id => `<details class="tchip"><summary><b>${esc(titleOf(id))}</b><small>${esc(from(id))}</small></summary><p>${esc(how(id))}</p></details>`).join('')}</div>` : '<p class="lead">아직 얻은 칭호가 없습니다. 통치를 마치면 결말과 등급에 따라 칭호를 얻습니다.</p>'}
+    ${(() => { const rest = ALL_TITLE_IDS().filter(id => !got.includes(id));
+      return rest.length ? `<h4 class="dexh">아직 얻지 못한 칭호 <em>${rest.length}개 · 눌러서 얻는 방법 보기</em></h4><div class="titles">${rest.map(id => `<details class="tchip notyet"><summary><b>???</b><small>${/^r\d$/.test(id) ? '독재자 등급 칭호' : HARD_TITLES.some(x => x.id === id) ? '얻기 어려운 칭호' : '결말 칭호'}</small></summary><p>${esc(howLocked(id))}</p></details>`).join('')}</div>` : ''; })()}
     <button class="ghost" onclick="readTitle();renderHome()">뒤로</button></div>`;
+}
+// 모은 칭호 · 못 모은 칭호 (못 모은 칭호는 이름과 결말 이름을 숨기고 얻는 방법만)
+const ALL_TITLE_IDS = () => ['r1', 'r2', 'r3', ...HARD_TITLES.map(x => x.id), ...ENDINGS.filter(e => TITLE[e.id]).map(e => e.id)];
+function howLocked(id){
+  if (/^r\d$/.test(id)){ const r = DRANK.find(x => 'r' + x.lv === id); return `한 판을 마치고 독재자 등급 ${r.lv}급(최종 점수 ${r.min}점 이상)을 받으면 얻습니다.`; }
+  const h = HARD_TITLES.find(x => x.id === id); if (h) return `조건: ${h.why}.`;
+  const e = ENDINGS.find(x => x.id === id); return e ? `${e.hint} 나오는 결말을 만나면 얻습니다.` : '';
 }
 async function renderRanking(){
   app.innerHTML = `<div class="screen start" style="max-width:820px"><span class="badge" style="justify-self:start">전체 랭킹</span><h1>모든 지도자 순위</h1><div class="power" id="rkmsg">순위를 불러오는 중…</div><div id="rkbody"></div><button class="ghost" onclick="renderHome()">뒤로</button></div>`;
