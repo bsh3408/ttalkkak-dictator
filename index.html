@@ -295,6 +295,12 @@ details.tchip summary{cursor:pointer;list-style:none;display:grid}details.tchip 
 .trail{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.trail i{font-style:normal;font-weight:900;color:#b0201f}.tn{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;background:#fff;border:1px solid currentColor;padding:2px 6px}.tn small{font-weight:500;opacity:.7}.tn.now{background:#1a1a1a;color:#fff}
 .ms{font-style:normal;font-size:11px;font-weight:900;border:2px solid;border-radius:50%;padding:3px 4px;transform:rotate(-12deg);display:inline-block;line-height:1}.ms.o{color:#b0201f}.ms.x{color:#2a4f8f}.ms.a{color:#6b4fa0}
 .seed{border:1px dashed #7A4B00;color:#7A4B00;background:#FFFBEF;padding:8px 10px;font-weight:700;font-size:14px}
+.worth .wt{font:900 13px "Noto Sans KR",sans-serif;color:#5b5348;margin:10px 0 2px}
+.worth .wr{display:grid;grid-template-columns:3.2em 1fr auto;gap:8px;align-items:baseline;padding:3px 0;border-bottom:1px dashed #cfc6b2;font-size:15px}
+.worth .wr small{color:#5b5348;font-size:12px}.worth .up{color:var(--o)}.worth .dn{color:var(--x)}
+.dhead{font:900 13px "Noto Sans KR",sans-serif;color:#5b5348;margin:8px 0 -2px}
+.bsum summary{list-style:none;cursor:pointer;display:grid;gap:4px}.bsum summary::-webkit-details-marker{display:none}
+.bsum .bmore{font-size:12px;color:#7A4B00;text-decoration:underline}.bsum[open] .bmore{display:none}
 .bsum{border:2px solid #7A4B00;background:#FFF3D6;padding:8px 10px;display:grid;gap:4px}.bsum small{font-size:13px}
 .bfly{display:grid;gap:6px;padding:10px 0}.bfly.good .tn{border-color:#1f6b3a}
 .hsbox summary{list-style:none;cursor:pointer}.hsbox summary::-webkit-details-marker{display:none}.hswhy{display:block;font-size:12.5px;color:#6a6a6a;margin:-2px 0 6px}
@@ -3438,8 +3444,8 @@ const EX_NORM = 0.30, IM_NORM = 0.31, TRADE_PULL = 0.08, TRADE_KEEP = 0.3, ASSET
 function econYear(e, g0){
   const grow = S.gdp / g0 - 1;
   S.ex *= 1 + grow * 0.8; S.im *= 1 + grow * 0.9;                                    // 경제가 커지면 무역도 커진다
-  if (e.ex) S.ex *= 1 + e.ex / 100;
-  if (e.im) S.im *= 1 + e.im / 100;
+  { const b = S.ex; if (e.ex) S.ex *= 1 + e.ex / 100; S.exG = S.ex - b; }   // 이번 결재로 늘어난 수출·수입 (조 원)
+  { const b = S.im; if (e.im) S.im *= 1 + e.im / 100; S.imG = S.im - b; }
   S.ex += (S.gdp * EX_NORM - S.ex) * TRADE_PULL; S.im += (S.gdp * IM_NORM - S.im) * TRADE_PULL;   // 무역은 해마다 보통 수준(GDP 대비)으로 조금씩 되돌아간다
   if (e.as) S.assets += e.as / 100 * S.gdp;
   if (e.debt) S.debt = Math.max(0, S.debt + (e.debt > 0 ? e.debt * DEBT_MULT : e.debt) / 100 * S.gdp);   // 새로 지는 빚은 적힌 값보다 무겁다
@@ -3467,6 +3473,7 @@ function choose(side){
   if (S.cause && c.O && c.X){ S.hsChainN = (S.hsChainN || 0) + 1; if (isWise(c, side)) S.hsChainOk = (S.hsChainOk || 0) + 1; }
   const rank0 = worldRank(S.gdp), gdpBefore = S.gdp;
   S.gdp = Math.round(S.gdp * (1 + (opt.d.gdp||0)/100));
+  S.cardG = S.gdp - gdpBefore;   // 이번 결재가 바꾼 GDP (조 원)
   for (const s of STATS) if (opt.d[s.k]) hid(s.k, opt.d[s.k]);
   if (opt.sup) for (const k in opt.sup) S.cap[k]+=opt.sup[k];
   if (opt.dem) S.demand += opt.dem;
@@ -3494,7 +3501,7 @@ function choose(side){
   if (opt.good) S.flags.goodchain = true;
   // 올해 전력 수급 확인
   const sup = supplyTotal(), dem = demandNow(), out = sup < dem;
-  if (!out) S.gdp = Math.round(S.gdp * (1 + BASE_GROWTH));
+  { const g = S.gdp; if (!out) S.gdp = Math.round(S.gdp * (1 + BASE_GROWTH)); S.baseG = S.gdp - g; }
   if (out){ S.blackouts++; S.gdp = Math.round(S.gdp*0.97); hid('happy',-3);
     if (!S.flags.blackout){ S.flags.blackout=true; const f=FOLLOW.find(x=>x.need==='blackout'); if (!S.used[f.id]){ S.used[f.id]=true; S.pending.push({at:S.turn+f.after+1, card:f, cause:{title:'정전', year:yearOf(S.turn), step:2}}); } } }
   const byAI = side === 'A' && !opt.fixed;   // 지도자가 빈틈을 짚어 고친 안은 스스로 내린 결정으로 센다
@@ -3507,7 +3514,7 @@ function choose(side){
   if (opt.illegal) S.illegal = (S.illegal || 0) + 1;
   if (opt.spy) S.spies = (S.spies || 0) + 1;
   if (byAI){ S.aiCount++; S.noAi = 0; } else { S.noAi++; S.maxNoAi = Math.max(S.maxNoAi, S.noAi); }
-  S.log.unshift({type:'card', turn:S.turn, card:c, side, d:opt.d, gdpAfter:S.gdp, sup, dem, out, step:S.cause?S.cause.step:0});
+  S.log.unshift({type:'card', turn:S.turn, card:c, side, d:opt.d, dg:S.cardG, gdpAfter:S.gdp, sup, dem, out, step:S.cause?S.cause.step:0});
   if (!S.net) S.bots.forEach(b => b.gdp = Math.round(b.gdp * (1 + b.rate)));
   S.gdpHist.push(S.gdp);
   const past = S.gdpHist[Math.max(0, S.gdpHist.length - 4)];
@@ -3725,6 +3732,18 @@ function statusPanel(){
   ${isOpen()?`<details class="box sbox" ${foldAttr('life')}><summary><h3>국민 생활 지표 <em>평균 ${avgHidden(S)}</em></h3></summary><div class="in">${barsHTML()}</div></details>`:''}`;
 }
 let LOG_OPEN = false;
+function worthBox(){
+  const cards = S.log.filter(l => l.type === 'card' && l.dg != null);
+  if (!cards.length) return '';
+  const total = cards.reduce((a, l) => a + l.dg, 0);
+  const what = l => l.side === 'A' ? 'AI의 안' : l.side === 'O' ? '승인' : '반려';
+  const row = l => `<div class="wr"><span class="y">${yearOf(l.turn)}</span><span>${esc(l.card.title)} <small>${what(l)}</small></span><b class="${l.dg > 0 ? 'up' : 'dn'}">${l.dg > 0 ? '+' : ''}${fmt(l.dg)}조</b></div>`;
+  const best = cards.filter(l => l.dg > 0).sort((a, b) => b.dg - a.dg).slice(0, 3), worst = cards.filter(l => l.dg < 0).sort((a, b) => a.dg - b.dg).slice(0, 3);
+  return `<div class="box worth"><h3>나의 결재가 만든 값어치 <em>조 원으로 바꾸어 본 것</em></h3><div class="in">
+    <div class="lead">결재 ${cards.length}번이 나라의 GDP를 모두 <b class="${total >= 0 ? 'up' : 'dn'}">${total >= 0 ? '+' : ''}${fmt(total)}조 원</b> 바꾸었습니다. 같은 1%라도 나라가 클수록 값어치가 커집니다.</div>
+    ${best.length ? `<div class="wt">가장 값진 결재</div>${best.map(row).join('')}` : ''}
+    ${worst.length ? `<div class="wt">가장 값비싼 결재</div>${worst.map(row).join('')}` : ''}</div></div>`;
+}
 function logPanel(){
   const items = S.log.map(l=>{
     if (l.type==='event') return `<div class="e ev"><span class="y">${yearOf(l.turn)}</span><div><b>사건</b> ${l.title}<div class="d">${l.res}</div></div></div>`;
@@ -3965,7 +3984,7 @@ async function renderRanking(){
       ${scopes.length > 1 ? `<div class="rkseg">${scopes.map(([c, n]) => `<button class="${c === RANK_STATE.scope ? 'on' : ''}" data-scope="${c}">${n}</button>`).join('')}</div>` : ''}
       <div class="rktabs">${RANK_TABS.map(x => `<button class="${x.k === T.k ? 'on' : ''}" data-tab="${x.k}">${x.n}</button>`).join('')}</div>
       <div class="mybox"><small>나의 ${T.n} 순위</small>${i >= 0 ? `<b>${i + 1}위</b><span>${rows.length}명 가운데 · ${T.f(T.v(rows[i]))}${T.k !== 'score' ? ` · 종합 ${rows[i].st.score}점` : ''}${rows[i].st.grade ? ' · ' + esc(rows[i].st.grade) : ''}</span>` : '<b>–</b><span>아직 진짜 독재자 기록이 없습니다</span>'}</div>
-      ${rows.length ? `<table class="rktab">${rows.slice(0, 30).map((r, k) => `<tr class="${r.name === me ? 'me' : ''}"><td class="rk">${k + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}${fellRow(r) ? ` <b class="rbfell">${esc(fellText(r))}</b>` : ''}</td><td class="v">${T.f(T.v(r))}</td></tr>`).join('')}</table><p class="lead" style="font-size:13px;margin:6px 0 0">${T.n} 순서로 30위까지 보여 줍니다. 실각한 기록은 50년을 마친 기록보다 아래에 놓입니다.</p>` : '<p class="lead">아직 기록이 없습니다.</p>'}`;
+      ${rows.length ? `<table class="rktab">${rows.slice(0, 30).map((r, k) => `<tr class="${r.name === me ? 'me' : ''}"><td class="rk">${k + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}${endTag(r)}</td><td class="v">${T.f(T.v(r))}</td></tr>`).join('')}</table><p class="lead" style="font-size:13px;margin:6px 0 0">${T.n} 순서로 30위까지 보여 줍니다. 실각하거나 50년을 채우지 못한 기록은 50년을 마친 기록보다 아래에 놓입니다.</p>` : '<p class="lead">아직 기록이 없습니다.</p>'}`;
     document.querySelectorAll('.rktabs button').forEach(b => b.onclick = () => { RANK_STATE.tab = b.dataset.tab; draw(); });
     document.querySelectorAll('.rkseg button').forEach(b => b.onclick = () => { RANK_STATE.scope = b.dataset.scope; draw(); });
   };
@@ -4031,7 +4050,7 @@ async function loadRoomBoard(c, quiet){
   const prog = Object.fromEntries((b2 || []).map(r => [r.name, r]));
   const real = (rv || []).slice().sort((a, b) => byTier(a, b) || ((b.st && b.st.score) ?? -1) - ((a.st && a.st.score) ?? -1) || b.gdp - a.gdp);
   const t2 = real.length ? `<table class="rktab rbtab">${head(['순위', '나라(이름)', '점수', '급수', '진행'])}${real.map((r, i) => { const pr = prog[r.name] || {};
-      return `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${r.st && r.st.score != null ? r.st.score + '점' : '–'}</td><td class="v">${r.st && r.st.grade && !fellRow(r) ? esc(r.st.grade) : '–'}</td><td class="v">${fellRow(r) ? st(r) : st(pr)}</td></tr>`; }).join('')}</table>` : '<p class="lead">아직 진짜 독재자 기록이 없습니다.</p>';
+      return `<tr><td class="rk">${i + 1}</td><td>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(mateLabel(r))}</td><td class="v">${r.st && r.st.score != null ? r.st.score + '점' : '–'}</td><td class="v">${r.st && r.st.grade && !tierOf(r) ? esc(r.st.grade) : tierOf(r) === 1 ? endTag(r) : '–'}</td><td class="v">${fellRow(r) ? st(r) : st(pr)}</td></tr>`; }).join('')}</table>` : '<p class="lead">아직 진짜 독재자 기록이 없습니다.</p>';
   body.innerHTML = `<div class="rbcols"><div><h2>초보 독재자 <small>GDP 순위</small></h2>${t1}</div><div><h2>진짜 독재자 <small>최종 점수 순위</small></h2>${t2}</div></div>`;
 }
 function renderNation(fresh){
@@ -4305,7 +4324,8 @@ function backHTML(){
 // 연결 고리에 있던 결재들이 바꾼 것을 모두 더한다
 function chainSum(path){
   const d = {gdp:0}; STATS.forEach(x => d[x.k] = 0);
-  path.forEach(p => { const l = S.log.find(l => l.type === 'card' && l.card.title === p.title && yearOf(l.turn) === p.year); if (l && l.d) for (const k in d) d[k] += l.d[k] || 0; });
+  path.forEach(p => { const l = S.log.find(l => l.type === 'card' && l.card.title === p.title && yearOf(l.turn) === p.year); if (l && l.d){ for (const k in d) if (k !== 'gdp') d[k] += l.d[k] || 0; d.gdp = (1 + d.gdp / 100) * (1 + (l.d.gdp || 0) / 100) * 100 - 100; } });
+  d.gdp = Math.round(d.gdp * 10) / 10;
   const show = [`<span class="${d.gdp > 0 ? 'up' : d.gdp < 0 ? 'dn' : ''}">GDP ${d.gdp > 0 ? '+' : ''}${d.gdp}%</span>`]
     .concat(isOpen() ? STATS.filter(x => d[x.k]).map(x => { const v = d[x.k], good = x.inv ? v < 0 : v > 0; return `<span class="${good ? 'up' : 'dn'}">${x.n} ${v > 0 ? '+' : ''}${v}</span>`; }) : []);
   return show.join('');
@@ -4644,9 +4664,10 @@ function renderResult(side, opt, pw){
     ${powerLine}
     ${rankLine}
     ${S.coupPending ? '<div class="power bad">궁전 밖이 심상치 않습니다. 멀리서 탱크 소리가 들립니다…</div>' : (newsNow ? `<div class="news"><b>${esc(PAPER())}</b>${newsNow}</div>` : '')}
+    <div class="dhead">이번 결재로 바뀐 것</div>
     <div class="delta">${deltas.join('')}</div>
     ${S.card.dl && side !== 'A' ? `<div class="dlnote"><b>정답이 없는 안건</b> 승인해도 반려해도 나름의 까닭이 있습니다. 지도자 동지는 <b>「${S.card.dl[side === 'O' ? 0 : 1]}」</b>${josa(S.card.dl[side === 'O' ? 0 : 1], '을', '를').slice(-1)} 더 중요하게 여겼고, 대신 「${S.card.dl[side === 'O' ? 1 : 0]}」${josa(S.card.dl[side === 'O' ? 1 : 0], '을', '를').slice(-1)} 조금 내려놓았습니다.</div>` : ''}
-    ${S.cause && !S.cause.combo ? `<div class="bsum"><b>나의 선택이 이어져 지금까지 바꾼 것</b><small>${(S.cause.path || []).map(p => `「${esc(p.title)}」`).join(' → ')} → 「${esc(S.card.title)}」</small><div class="delta">${chainSum([...(S.cause.path || []), {title:S.card.title, year:yearOf(S.turn)}])}</div></div>` : ''}
+    ${S.cause && !S.cause.combo ? `<details class="bsum"><summary><b>나의 선택이 이어진 길</b><small>${(S.cause.path || []).map(p => `「${esc(p.title)}」`).join(' → ')} → 「${esc(S.card.title)}」</small><span class="bmore">눌러서 이 길이 지금까지 바꾼 것 모두 보기</span></summary><div class="delta">${chainSum([...(S.cause.path || []), {title:S.card.title, year:yearOf(S.turn)}])}</div></details>` : ''}
     ${S.balBonus ? `<div class="power up">균형 성장 ${S.hsRun}년째: 경제가 크면서 국민 삶·공정함·환경도 나빠지지 않았습니다. 투자와 인재가 몰려 GDP +${Math.round(S.balBonus * 1000) / 10}%</div>` : ''}
     ${S.seeded ? '<div class="seed">이 선택은 몇 년 뒤 다른 일로 이어집니다.</div>' : ''}
     <button class="next" id="nx" disabled>다음 해로<i class="lock"></i></button>
@@ -4704,6 +4725,7 @@ function endGame(){
     ${isAll() ? '' : `<div class="box"><h3>${roomWord()} GDP 순위</h3>${R.html}</div>`}
     ${S.mode===2 ? `<button class="ghost" onclick="renderLeaders()">진짜 지도자 랭킹 보기</button>` : ''}
     ${S.mode===1 ? (S.net && !S.net.open ? `<div class="power" id="waitbox">선생님이 숨겨진 지표를 공개할 때까지 기다려 주세요…</div>` : `<button class="primary" onclick="reveal()">${S.net && S.net.open ? '숨겨진 지표 보기' : '숨겨진 지표 공개 (교사 버튼)'}</button>`) : `<button class="primary" onclick="nationCard()">나라 카드 만들기</button>`}
+    ${worthBox()}
     <details class="fold"><summary>자세한 통치 기록 <em>눌러서 펼치기</em></summary>
     <div class="box"><h3>마지막 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
     <div class="box"><div class="in"><div class="lead">최종 국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">시작 ${fmt(S.gdp0 || GDP0)}조 원 · 변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)${isAll() ? '' : ` · ${roomWord()} ${R.rank}등 / ${R.total}명`} · 정전 ${S.blackouts}번 · 숙청 ${S.purges}번</div></div></div>
@@ -4956,6 +4978,7 @@ function runEnd(){
     ${toReal ? `<div class="box"><h3>숨겨진 국민 생활 지표 <em>초보 독재자에서는 보이지 않던 숫자</em></h3><div class="in">${barsHTML()}</div></div>` : ''}
     ${butterflyBox(S)}
     ${hide ? '' : hsBox(S)}
+    ${worthBox()}
     <details class="fold" open><summary>자세한 통치 기록 <em>눌러서 접기</em></summary>
     <div class="box"><h3>이번 통치의 기록</h3><div class="in kv" style="margin:0"><span>AI의 안을 따름</span><b>${S.aiCount}번</b><span>정전</span><b class="${S.blackouts?'neg':''}">${S.blackouts}번</b><span>훈장</span><b>${S.medals}개</b><span>통치 판</span><b>${S.run}번째</b></div></div>
     <div class="box"><div class="in"><div class="lead">국가소득</div><div class="big">${fmt(S.gdp)}조 원</div><div class="lead">변화 ${growth(S) > 0 ? '+' : ''}${growth(S)}% · 세계 ${worldRank(S.gdp)}위 (처음 ${S.rank0 || START_RANK}위)</div></div></div>
@@ -5024,7 +5047,11 @@ function gradeLabel(s){ return s.over === 'done' ? drankOf(s).lv + '급' : s.ove
 // 모든 순위 공통: 실각한 기록은 50년을 마친 기록보다 무조건 아래
 const fellRow = r => !!(r && ((r.st && r.st.fell) || r.fell || /^실각/.test((r.st && r.st.grade) || r.grade || '')));
 const fellText = r => { const g = (r.st && r.st.grade) || r.grade || ''; return /^실각/.test(g) ? g : `실각(${(r.st && r.st.years) || r.years || r.turn || 0}년)`; };
-const byTier = (a, b) => fellRow(a) - fellRow(b);
+// 50년을 못 채우고 멈춘 기록(시간 제한 등): 실각은 아니지만 50년을 마친 기록보다는 아래
+const unfinRow = r => !fellRow(r) && ((r && r.st && r.st.years) ?? (r && r.years) ?? TURNS) < TURNS;
+const tierOf = r => fellRow(r) ? 2 : unfinRow(r) ? 1 : 0;
+const byTier = (a, b) => tierOf(a) - tierOf(b);
+const endTag = r => fellRow(r) ? ` <b class="rbfell">${esc(fellText(r))}</b>` : unfinRow(r) ? ` <b class="rbfell">미완(${(r.st && r.st.years) ?? r.years}년)</b>` : '';
 const PART_NAMES = ['경제 성장', '국민 삶', '공정함', '환경과 기후', '스스로 판단', '통치 기간'];
 async function leaderRows(){
   if (S.net){
@@ -5066,7 +5093,7 @@ async function renderLeaders(){
       <tr><th>순위</th><th>지도자</th><th>등급</th><th>점수</th><th>GDP 순위에서</th>${PART_NAMES.map(n => `<th class="pn">${n}</th>`).join('')}</tr>
       ${rows.map((r, i) => `<tr class="${r.me ? 'me' : ''} ${i < 3 ? 'podium' : ''}"><td>${i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}</td>
         <td><b>${r.flag ? flagSVG(r.flag, 26) + ' ' : ''}${esc(r.nation ? mateLabel(r) : r.name)}</b><small>${r.ending ? esc(endName(r.ending)) : ''} · ${r.years}년 · GDP ${fmt(Math.round(r.gdp))}조</small></td>
-        <td class="g">${fellRow(r) ? `<b class="rbfell">${esc(fellText(r))}</b>` : esc(r.grade || '–')}</td><td class="n">${r.score}</td><td>${move(r)}</td>
+        <td class="g">${tierOf(r) ? endTag(r) : esc(r.grade || '–')}</td><td class="n">${r.score}</td><td>${move(r)}</td>
         ${PART_NAMES.map((n, k) => `<td class="pn"><i style="width:${r.parts[k] || 0}%"></i><span>${r.parts[k] ?? '-'}</span></td>`).join('')}</tr>`).join('')}
     </table></div></div>
     <p class="lead" style="font-size:13px">실각한 지도자는 점수가 높아도 50년을 마친 지도자보다 아래에 놓이고, 급수를 받지 못합니다. ▲는 GDP 순위보다 진짜 지도자 순위가 올라간 사람, ▼는 내려간 사람입니다. GDP 1등이 꼭 좋은 지도자였을까요?</p>
